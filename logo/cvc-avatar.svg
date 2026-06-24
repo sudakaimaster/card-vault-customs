@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240" role="img" aria-label="Card Vault Customs avatar">
+  <!-- Square navy avatar for Instagram / favicon -->
+  <rect x="0" y="0" width="240" height="240" rx="40" fill="#0c1322"/>
+  <!-- Slab icon, gold on navy, centered -->
+  <g transform="translate(86,62)">
+    <rect x="0" y="0" width="68" height="92" rx="12" fill="none" stroke="#d8b25a" stroke-width="4"/>
+    <rect x="12" y="12" width="44" height="13" rx="4" fill="#d8b25a"/>
+    <path d="M34 42 l14 16 -14 16 -14-16 z" fill="#d8b25a"/>
+  </g>
+</svg>

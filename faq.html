@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Card Vault Customs — FAQ</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --bg:#f7f8fb; --bg-2:#ffffff; --ink:#0c1322; --muted:#5b6678;
+    --gold:#b8923a; --gold-soft:#d8b25a; --navy:#0c1322; --line:#e4e7ee; --radius:14px;
+    --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:var(--font-display);}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:820px;margin:0 auto;padding:0 24px;}
+
+  .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
+  header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px;}
+  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
+  .logo .wm i{color:var(--gold);font-style:normal;}
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
+  .nav-links a:hover{color:var(--ink);}
+  .nav-links a.active{color:var(--ink);font-weight:600;}
+  .cart{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
+
+  /* hero */
+  .faq-hero{text-align:center;padding:56px 0 30px;}
+  .faq-hero .eyebrow{color:var(--gold);font-weight:700;font-size:12.5px;letter-spacing:2.5px;text-transform:uppercase;margin-bottom:12px;}
+  .faq-hero h1{font-size:38px;font-weight:800;margin-bottom:12px;}
+  .faq-hero p{color:var(--muted);font-size:16px;}
+
+  /* categories */
+  .cat{padding:8px 0 28px;}
+  .cat h2{font-size:14px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin:26px 0 12px;}
+
+  /* accordion item */
+  details{background:var(--bg-2);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;overflow:hidden;transition:border-color .15s ease;}
+  details[open]{border-color:rgba(184,146,58,0.55);}
+  summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px 18px;font-family:var(--font-display);font-weight:600;font-size:15.5px;}
+  summary::-webkit-details-marker{display:none;}
+  summary .plus{flex:none;width:22px;height:22px;position:relative;}
+  summary .plus::before,summary .plus::after{content:"";position:absolute;background:var(--gold);border-radius:2px;transition:transform .2s ease,opacity .2s ease;}
+  summary .plus::before{top:10px;left:3px;width:16px;height:2px;}
+  summary .plus::after{top:3px;left:10px;width:2px;height:16px;}
+  details[open] summary .plus::after{transform:rotate(90deg);opacity:0;}
+  .answer{padding:0 18px 18px;color:var(--muted);font-size:14.5px;}
+  .answer b{color:var(--ink);}
+  .answer a{color:var(--gold);font-weight:600;}
+
+  /* still have questions */
+  .cta{background:var(--navy);border-radius:16px;padding:34px;text-align:center;color:#fff;margin:30px 0 60px;}
+  .cta h3{font-size:22px;font-weight:800;margin-bottom:8px;}
+  .cta p{color:#9aa7bd;margin-bottom:18px;font-size:14.5px;}
+  .cta .btn{display:inline-block;background:var(--gold);color:#1a1206;font-family:var(--font-display);font-weight:700;font-size:14.5px;padding:12px 26px;border-radius:999px;}
+  .cta .btn:hover{background:var(--gold-soft);}
+
+  @media (max-width:680px){ .nav-links{display:none;} .faq-hero h1{font-size:30px;} }
+</style>
+</head>
+<body>
+  <div class="announce">★ Free shipping on orders over $50 · Buy 2 Get 1 Free — code BUY2GET1 ★</div>
+
+  <header class="site">
+    <div class="nav">
+      <a href="theme-preview-light.html" class="logo">
+        <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#0c1322" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#b8923a"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#0c1322" stroke-width="4" stroke-linejoin="round"/>
+        </svg>
+        <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
+      </a>
+      <nav class="nav-links">
+        <a href="design-page.html">Shop</a>
+        <a href="theme-preview-light.html#how">How It Works</a>
+        <a href="about.html">About</a>
+        <a href="faq.html" class="active">FAQ</a>
+      </nav>
+      <a href="design-page.html" class="cart">Cart (0)</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="faq-hero">
+      <div class="eyebrow">Got Questions?</div>
+      <h1>Frequently Asked Questions</h1>
+      <p>Everything you need to know about designing, ordering, and receiving your custom slab.</p>
+    </div>
+
+    <!-- DESIGNING & ORDERING -->
+    <section class="cat">
+      <h2>Designing &amp; Ordering</h2>
+
+      <details open>
+        <summary>What kind of design can I request?<span class="plus"></span></summary>
+        <div class="answer">Almost anything! Upload your photo and describe your dream card in as much detail as you like — the character or person, the pose or scene, background, colors, mood, and any text, names, or dates. The more you tell us, the more creative we can get. No idea is too big.</div>
+      </details>
+
+      <details>
+        <summary>What photos can I send?<span class="plus"></span></summary>
+        <div class="answer">Clear, high-resolution photos you own the rights to (your own photos work best). Please don't send copyrighted or celebrity images you don't have permission to use. The better your photo, the better your finished card.</div>
+      </details>
+
+      <details>
+        <summary>Can I customize the finish, borders, and grade?<span class="plus"></span></summary>
+        <div class="answer">Yes — that's the fun part. You choose your <b>card finish</b> (holographic, foil, matte, or glossy), <b>border style</b>, the <b>name/text</b> on the slab, and the <b>display grade</b> (1–10). The grade is a cosmetic design choice, not a real grading score.</div>
+      </details>
+
+      <details>
+        <summary>Can I order more than one?<span class="plus"></span></summary>
+        <div class="answer">Absolutely. Set the quantity on the product page, or check out our discounted bundles. Each card in your order can have its own design and details.</div>
+      </details>
+    </section>
+
+    <!-- PROOFS & APPROVAL -->
+    <section class="cat">
+      <h2>Proofs &amp; Approval</h2>
+
+      <details>
+        <summary>How do I approve my design?<span class="plus"></span></summary>
+        <div class="answer">We send a proof by <b>text or email</b> (your choice at checkout), usually within 48 hours. You approve or request changes by reply — nothing prints until you say go.</div>
+      </details>
+
+      <details>
+        <summary>What if I want changes to the proof?<span class="plus"></span></summary>
+        <div class="answer">Just reply with what you'd like adjusted. We'll revise and send a new proof — we keep going until you love it. Printing only starts once you've approved.</div>
+      </details>
+
+      <details>
+        <summary>Are the proofs watermarked?<span class="plus"></span></summary>
+        <div class="answer">Yes. Design proofs are sent as <b>watermarked, preview-quality images</b> so you can review them. Your finished card and slab are printed in full, clean, high resolution — the watermark only appears on the digital preview, never on the product you receive.</div>
+      </details>
+    </section>
+
+    <!-- SHIPPING & TURNAROUND -->
+    <section class="cat">
+      <h2>Shipping &amp; Turnaround</h2>
+
+      <details>
+        <summary>How long does it take?<span class="plus"></span></summary>
+        <div class="answer">About 4–7 business days to design, approve, and make your order, plus delivery time. Need it faster? Add the <b>Rush</b> option at checkout.</div>
+      </details>
+
+      <details>
+        <summary>Where do you ship?<span class="plus"></span></summary>
+        <div class="answer">From Canada — across Canada, to the US, and internationally. Rates are shown at checkout, and shipping is <b>free on orders over $50</b>.</div>
+      </details>
+    </section>
+
+    <!-- PAYMENTS & RETURNS -->
+    <section class="cat">
+      <h2>Payments &amp; Returns</h2>
+
+      <details>
+        <summary>What payment methods do you accept?<span class="plus"></span></summary>
+        <div class="answer">All major credit cards, plus Apple Pay, Google Pay, and Shop Pay — securely at checkout. Your payment details are never stored by us.</div>
+      </details>
+
+      <details>
+        <summary>Can I get a refund?<span class="plus"></span></summary>
+        <div class="answer">Because every item is custom-made, we can't accept returns for change of mind. But you approve a proof before we print, and we'll repair or replace anything that arrives damaged or different from what you approved. See our Refund Policy for details.</div>
+      </details>
+    </section>
+
+    <!-- PRODUCT TRUTH -->
+    <section class="cat">
+      <h2>About Our Products</h2>
+
+      <details>
+        <summary>Are these real graded cards?<span class="plus"></span></summary>
+        <div class="answer">No. These are <b>custom, fan-made novelty cards</b> in display slabs we designed to <i>look</i> like graded cards. They are not authentic PSA, BGS, or CGC graded cards, have no grading authority behind them, and the "grade" on the label is cosmetic and chosen by you.</div>
+      </details>
+
+      <details>
+        <summary>Are you affiliated with Pokémon or One Piece?<span class="plus"></span></summary>
+        <div class="answer">No. We're an independent custom-design shop, not affiliated with, endorsed by, or licensed by Nintendo, The Pokémon Company, Bandai, or any rights holder. We don't reproduce official cards — we create original custom designs from your photos.</div>
+      </details>
+    </section>
+
+    <!-- CTA -->
+    <div class="cta">
+      <h3>Still have questions?</h3>
+      <p>We're a small team and we love a creative challenge — reach out anytime.</p>
+      <a href="https://www.instagram.com/cardvaultcustoms" class="btn">Message us on Instagram</a>
+    </div>
+  </div>
+</body>
+</html>

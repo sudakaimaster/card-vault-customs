@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Card Vault Customs — Design Your Card</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --bg:#f7f8fb; --bg-2:#ffffff; --ink:#0c1322; --muted:#5b6678;
+    --gold:#b8923a; --gold-soft:#d8b25a; --navy:#0c1322;
+    --line:#e4e7ee; --radius:14px;
+    --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:var(--font-body);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  h1,h2,h3{font-family:var(--font-display);}
+  a{color:inherit;text-decoration:none;}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+
+  /* announcement + header */
+  .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
+  header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:70px;}
+  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
+  .logo .wm i{color:var(--gold);font-style:normal;}
+  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
+  .nav-links a:hover{color:var(--ink);}
+  .cart{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
+
+  /* breadcrumb */
+  .crumb{padding:22px 0 6px;color:var(--muted);font-size:13px;}
+  .crumb b{color:var(--ink);}
+
+  /* product layout */
+  .product{display:grid;grid-template-columns:0.95fr 1.05fr;gap:48px;padding:18px 0 70px;align-items:start;}
+
+  /* left: slab preview */
+  .media{position:sticky;top:96px;}
+  .slab{position:relative;width:330px;margin:0 auto;background:#fff;border:1px solid rgba(12,19,34,0.10);border-radius:18px;padding:14px 14px 18px;box-shadow:0 24px 50px rgba(12,19,34,0.16),inset 0 1px 0 rgba(255,255,255,0.9);}
+  .slab-label{display:flex;align-items:center;justify-content:space-between;background:#0a1020;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-bottom:12px;}
+  .slab-label .brand{font-family:var(--font-display);font-weight:800;font-size:10.5px;letter-spacing:1.5px;color:var(--gold);}
+  .slab-label .sub{font-size:8.5px;color:#9aa7bd;letter-spacing:1px;}
+  .grade-badge{text-align:center;background:var(--gold);color:#1a1206;border-radius:6px;padding:4px 9px;font-family:var(--font-display);font-weight:800;line-height:1;}
+  .grade-badge b{font-size:18px;display:block;}
+  .grade-badge small{font-size:7px;letter-spacing:1px;}
+  .slab-window{aspect-ratio:5/7;border-radius:10px;overflow:hidden;border:1px solid rgba(12,19,34,0.14);background:#e9ecf2;display:flex;align-items:center;justify-content:center;padding:12px;}
+  /* live card preview */
+  .card-inner{position:relative;width:100%;height:100%;border-radius:8px;overflow:hidden;border:3px solid #f1d97a;background:#dfe3ea;transition:border-color .2s ease;}
+  .card-photo{position:absolute;inset:0;background-size:cover;background-position:center;background-color:#dfe3ea;display:flex;align-items:center;justify-content:center;text-align:center;}
+  .card-ph{color:rgba(12,19,34,0.45);font-size:12px;font-family:var(--font-display);font-weight:600;padding:0 22px;line-height:1.5;}
+  .card-photo.has-photo .card-ph{display:none;}
+  .card-inner::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.5;transition:opacity .2s ease;}
+  .finish-holo::after{background:conic-gradient(from 200deg at 70% 80%,rgba(120,200,255,0.95),rgba(180,120,255,0.85),rgba(120,255,200,0.8),rgba(255,220,120,0.85),rgba(120,200,255,0.95));}
+  .finish-foil::after{background:linear-gradient(115deg,rgba(255,0,128,0.55),rgba(255,200,0,0.55),rgba(0,200,255,0.55),rgba(180,0,255,0.55));}
+  .finish-matte::after{opacity:0;}
+  .finish-glossy::after{background:linear-gradient(135deg,rgba(255,255,255,0.7),rgba(255,255,255,0) 42%);mix-blend-mode:normal;opacity:.8;}
+  .border-classic{border-color:#f1d97a;} .border-gold{border-color:#b8923a;}
+  .border-silver{border-color:#c7ccd9;} .border-black{border-color:#1a1f2b;}
+  .border-none{border-color:transparent;border-width:0;}
+  .thumbs{display:flex;gap:10px;justify-content:center;margin-top:18px;}
+  .thumbs div{width:54px;height:54px;border-radius:8px;border:1px solid var(--line);background:#fff;}
+  .thumbs div.active{border-color:var(--gold);}
+
+  /* right: form */
+  .pinfo .tag{display:inline-block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(184,146,58,0.4);padding:3px 9px;border-radius:999px;margin-bottom:12px;}
+  .pinfo h1{font-size:30px;font-weight:800;line-height:1.15;margin-bottom:10px;}
+  .price{font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;}
+  .price s{color:var(--muted);font-weight:400;font-size:16px;margin-left:8px;}
+  .ship-note{color:var(--muted);font-size:13px;margin-bottom:22px;}
+
+  /* format toggle (raw vs slab) */
+  .seg{display:flex;gap:10px;}
+  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px 14px;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:700;color:var(--ink);text-align:left;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;}
+  .seg button .sp{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px;}
+  .seg button.active{border-color:var(--gold);background:#fcfaf4;box-shadow:0 0 0 1px var(--gold) inset;}
+
+  /* raw mode = hide slab casing, show just the card */
+  .slab.is-raw{background:transparent;border:none;box-shadow:none;padding:0;}
+  .slab.is-raw .slab-label{display:none;}
+  .slab.is-raw .slab-window{border:none;background:transparent;padding:0;}
+
+  .one-col{grid-template-columns:1fr !important;}
+
+  .form{display:flex;flex-direction:column;gap:18px;}
+  .field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;}
+  .field .hint{color:var(--muted);font-size:12.5px;font-weight:400;margin-left:6px;}
+  .field .req{color:var(--gold);}
+  select,input[type=text],input[type=tel],input[type=email],textarea{
+    width:100%;font-family:var(--font-body);font-size:14px;color:var(--ink);
+    background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 13px;outline:none;transition:border-color .15s ease;
+  }
+  select:focus,input:focus,textarea:focus{border-color:var(--gold);}
+  textarea{resize:vertical;min-height:104px;}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  /* upload */
+  .upload{border:1.5px dashed #c7ccd9;border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;transition:border-color .15s ease,background .15s ease;}
+  .upload:hover{border-color:var(--gold);background:#fcfaf4;}
+  .upload .ic{width:30px;height:30px;margin:0 auto 8px;display:block;}
+  .upload b{color:var(--ink);}
+
+  /* qty + add */
+  .buybar{display:flex;gap:14px;align-items:stretch;margin-top:6px;}
+  .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff;}
+  .qty button{width:42px;height:50px;border:none;background:#fff;font-size:20px;color:var(--ink);cursor:pointer;}
+  .qty button:hover{background:#f2f3f7;}
+  .qty input{width:46px;text-align:center;border:none;font-size:16px;font-weight:600;}
+  .add{flex:1;background:var(--gold);color:#1a1206;border:none;border-radius:999px;font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:.3px;cursor:pointer;transition:transform .15s ease,background .15s ease;}
+  .add:hover{background:var(--gold-soft);transform:translateY(-2px);}
+
+  .reassure{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--muted);font-size:12.5px;}
+  .reassure span{display:flex;align-items:center;gap:6px;}
+  .reassure svg{flex:none;}
+
+  /* add-to-cart confirmation toast */
+  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#0c1322;color:#fff;padding:14px 22px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 14px 34px rgba(12,19,34,0.35);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:200;display:flex;align-items:center;gap:10px;}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast svg{flex:none;}
+
+  @media (max-width:860px){
+    .product{grid-template-columns:1fr;gap:30px;}
+    .media{position:static;}
+    .nav-links{display:none;}
+    .two{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+  <div class="announce">★ Free shipping on orders over $50 · Buy 2 Get 1 Free — code BUY2GET1 ★</div>
+
+  <header class="site">
+    <div class="wrap nav">
+      <a href="theme-preview-light.html" class="logo">
+        <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#0c1322" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#b8923a"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#0c1322" stroke-width="4" stroke-linejoin="round"/>
+        </svg>
+        <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
+      </a>
+      <nav class="nav-links">
+        <a href="theme-preview-light.html#shop">Shop</a>
+        <a href="theme-preview-light.html#how">How It Works</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+      <a href="#" class="cart" id="cartLink">Cart (0)</a>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div class="crumb"><a href="theme-preview-light.html#shop" style="color:inherit;">Shop</a> / <b id="crumbName">Custom Graded Card Slab</b></div>
+
+    <div class="product">
+      <!-- LEFT: live slab preview -->
+      <div class="media">
+        <div class="slab">
+          <div class="slab-label">
+            <div>
+              <div class="brand">CARD VAULT CUSTOMS</div>
+              <div class="sub" id="lblName">CUSTOM SERIES · 2026</div>
+            </div>
+            <div class="grade-badge"><b id="lblGrade">10</b><small id="lblGradeText">GEM MINT</small></div>
+          </div>
+          <div class="slab-window">
+            <div class="card-inner finish-holo border-classic" id="cardInner">
+              <div class="card-photo" id="cardPhoto">
+                <span class="card-ph">Upload a photo to<br>preview your card</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="thumbs">
+          <div class="active"></div><div></div><div></div><div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: design form -->
+      <div class="pinfo">
+        <span class="tag" id="pTag">Best Seller</span>
+        <h1 id="pTitle">Design Your Custom Graded Slab</h1>
+        <div class="price" id="pPrice">$59.00 CAD <s>$85.00</s></div>
+        <p class="ship-note">Free proof before we print · ships within 48h of approval</p>
+
+        <form class="form" onsubmit="return false;">
+          <!-- Format: Raw or Slab -->
+          <div class="field">
+            <label>Choose your format <span class="req">*</span></label>
+            <div class="seg" id="formatSeg">
+              <button type="button" data-format="slab" class="active">Graded Slab <span class="sp">Sealed in a display case · $59</span></button>
+              <button type="button" data-format="raw">Raw Card <span class="sp">Just the custom card · $27</span></button>
+            </div>
+          </div>
+
+          <!-- Photo upload -->
+          <div class="field">
+            <label>Upload your photo(s) <span class="req">*</span> <span class="hint">JPG, PNG or HEIC — up to 20MB</span></label>
+            <label class="upload" for="photo">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="1.8"><path d="M12 16V4m0 0L8 8m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg>
+              <div><b>Click to upload</b> or drag &amp; drop</div>
+              <div style="font-size:12px;margin-top:4px;">The clearer your photo, the better your card</div>
+              <input id="photo" type="file" accept="image/*" multiple hidden />
+            </label>
+          </div>
+
+          <!-- Broad creative description -->
+          <div class="field">
+            <label>Describe your dream card <span class="hint">go wild — this is where the magic happens</span></label>
+            <textarea placeholder="Tell us your vision: the character or person, the pose or scene, background, colors, mood, any text/names/dates, and anything that makes it special. The more detail you give us, the more creative we can get. No idea is too big!"></textarea>
+          </div>
+
+          <!-- Card name -->
+          <div class="field">
+            <label>Card name / text on slab <span class="hint">e.g. a name, nickname, or date</span></label>
+            <input id="nameInput" type="text" placeholder="e.g. ASH KETCHUM · EST. 2026" />
+          </div>
+
+          <!-- Style + Grade -->
+          <div class="two" id="row2">
+            <div class="field">
+              <label>Card style <span class="req">*</span></label>
+              <select>
+                <option>Pokémon</option>
+                <option>One Piece</option>
+                <option>Surprise me / Other</option>
+              </select>
+            </div>
+            <div class="field" id="gradeField">
+              <label>Slab grade to display <span class="hint">cosmetic, 1–10</span></label>
+              <select id="gradeSelect">
+                <option>10 — Gem Mint</option>
+                <option>9</option><option>8</option><option>7</option><option>6</option>
+                <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Proof method + contact -->
+          <div class="field">
+            <label>How should we send your proof? <span class="req">*</span></label>
+            <select id="proof" onchange="document.getElementById('proofContact').placeholder = this.value==='Email' ? 'you@email.com' : '(555) 123-4567'">
+              <option value="Text">Text message</option>
+              <option value="Email">Email</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Proof contact <span class="req">*</span></label>
+            <input id="proofContact" type="text" placeholder="(555) 123-4567" />
+          </div>
+
+          <!-- Qty + add -->
+          <div class="buybar">
+            <div class="qty">
+              <button type="button" onclick="var q=document.getElementById('q');q.value=Math.max(1,(+q.value||1)-1)">−</button>
+              <input id="q" type="text" value="1" inputmode="numeric" />
+              <button type="button" onclick="var q=document.getElementById('q');q.value=(+q.value||1)+1">+</button>
+            </div>
+            <button class="add" type="submit" id="addBtn">Add to Cart — $59.00</button>
+          </div>
+
+          <div class="reassure">
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Free design proof before printing</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Unlimited revisions until you love it</span>
+            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Ships in 48h after approval</span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d8b25a" stroke-width="2.4"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span id="toastMsg">Added to cart!</span>
+  </div>
+
+  <script>
+    var $ = function(id){ return document.getElementById(id); };
+    var cardInner = $('cardInner');
+
+    // Card name -> slab label
+    $('nameInput').addEventListener('input', function(e){
+      var v = e.target.value.trim();
+      $('lblName').textContent = v ? v.toUpperCase() : 'CUSTOM SERIES · 2026';
+    });
+
+    // Grade -> badge
+    $('gradeSelect').addEventListener('change', function(e){
+      var num = parseInt(e.target.value, 10);
+      $('lblGrade').textContent = num;
+      $('lblGradeText').textContent = num === 10 ? 'GEM MINT' : (num >= 8 ? 'MINT' : 'GRADED');
+    });
+
+    // Format: Raw vs Slab
+    var slab = document.querySelector('.slab');
+    var formatData = {
+      slab: { title:'Design Your Custom Graded Slab', crumb:'Custom Graded Card Slab', tag:'Best Seller', price:'$59.00 CAD <s>$85.00</s>', add:'Add to Cart — $59.00' },
+      raw:  { title:'Design Your Custom Card (Raw)',  crumb:'Custom Card (Raw)',       tag:'Most Affordable', price:'$27.00 CAD',            add:'Add to Cart — $27.00' }
+    };
+    document.querySelectorAll('#formatSeg button').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var fmt = btn.getAttribute('data-format');
+        document.querySelectorAll('#formatSeg button').forEach(function(b){ b.classList.remove('active'); });
+        btn.classList.add('active');
+        var d = formatData[fmt];
+        $('pTitle').textContent = d.title;
+        $('crumbName').textContent = d.crumb;
+        $('pTag').textContent = d.tag;
+        $('pPrice').innerHTML = d.price;
+        $('addBtn').textContent = d.add;
+        if (fmt === 'raw') {
+          slab.classList.add('is-raw');
+          $('gradeField').style.display = 'none';
+          $('row2').classList.add('one-col');
+        } else {
+          slab.classList.remove('is-raw');
+          $('gradeField').style.display = '';
+          $('row2').classList.remove('one-col');
+        }
+      });
+    });
+
+    // Add to cart (prototype) -> update count + confirmation toast
+    var cartCount = 0, toastTimer;
+    $('addBtn').addEventListener('click', function(){
+      var q = Math.max(1, parseInt($('q').value, 10) || 1);
+      cartCount += q;
+      $('cartLink').textContent = 'Cart (' + cartCount + ')';
+      var item = document.querySelector('#formatSeg button.active').getAttribute('data-format') === 'raw' ? 'Raw card' : 'Graded slab';
+      $('toastMsg').textContent = 'Added ' + q + ' × ' + item + ' to cart!';
+      var t = $('toast');
+      t.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+    });
+
+    // Photo -> live image in the card
+    $('photo').addEventListener('change', function(e){
+      var f = e.target.files && e.target.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function(ev){
+        var cp = $('cardPhoto');
+        cp.style.backgroundImage = 'url(' + ev.target.result + ')';
+        cp.classList.add('has-photo');
+      };
+      reader.readAsDataURL(f);
+    });
+  </script>
+</body>
+</html>

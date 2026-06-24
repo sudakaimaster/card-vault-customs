@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480" width="640" height="480" role="img" aria-label="Studio Ghibli-style anime illustration of the husband-and-wife team behind Card Vault Customs">
+  <defs>
+    <radialGradient id="bg" cx="0.5" cy="0.36" r="0.85">
+      <stop offset="0" stop-color="#fff6e8"/>
+      <stop offset="0.6" stop-color="#fbe9cf"/>
+      <stop offset="1" stop-color="#f3dcc0"/>
+    </radialGradient>
+    <radialGradient id="sun" cx="0.5" cy="0.22" r="0.5">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.85"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+
+    <radialGradient id="skinW" cx="0.42" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#ffe1c4"/>
+      <stop offset="0.7" stop-color="#f7caa2"/>
+      <stop offset="1" stop-color="#eab489"/>
+    </radialGradient>
+    <radialGradient id="skinM" cx="0.42" cy="0.4" r="0.7">
+      <stop offset="0" stop-color="#f8d3ad"/>
+      <stop offset="0.7" stop-color="#eebf94"/>
+      <stop offset="1" stop-color="#e0aa7c"/>
+    </radialGradient>
+
+    <linearGradient id="hairW" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#4a352a"/>
+      <stop offset="0.5" stop-color="#33241c"/>
+      <stop offset="1" stop-color="#241a14"/>
+    </linearGradient>
+    <linearGradient id="hairM" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0" stop-color="#3d2c22"/>
+      <stop offset="1" stop-color="#241a14"/>
+    </linearGradient>
+
+    <radialGradient id="irisW" cx="0.5" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#a8754a"/>
+      <stop offset="0.6" stop-color="#6f4527"/>
+      <stop offset="1" stop-color="#3c2616"/>
+    </radialGradient>
+    <radialGradient id="irisM" cx="0.5" cy="0.35" r="0.7">
+      <stop offset="0" stop-color="#7a5638"/>
+      <stop offset="0.6" stop-color="#4f3420"/>
+      <stop offset="1" stop-color="#2c1c11"/>
+    </radialGradient>
+
+    <radialGradient id="blush" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#f7948c" stop-opacity="0.6"/>
+      <stop offset="1" stop-color="#f7948c" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="topW" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c890b5"/>
+      <stop offset="1" stop-color="#a8728f"/>
+    </linearGradient>
+    <linearGradient id="topM" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c4a72"/>
+      <stop offset="1" stop-color="#1c3454"/>
+    </linearGradient>
+
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#e6c878"/><stop offset="1" stop-color="#b8923a"/>
+    </linearGradient>
+    <linearGradient id="holo" x1="0" y1="0" x2="1" y2="1" gradientTransform="rotate(20 0.5 0.5)">
+      <stop offset="0" stop-color="#9ad8ff"/><stop offset="0.3" stop-color="#c9a6ff"/>
+      <stop offset="0.55" stop-color="#a6ffd6"/><stop offset="0.8" stop-color="#ffe49a"/>
+      <stop offset="1" stop-color="#9ad8ff"/>
+    </linearGradient>
+
+    <g id="leaf"><path d="M0 0 Q9 -6 16 0 Q9 6 0 0 Z" fill="#a9c98a" opacity="0.7"/><path d="M2 0 L14 0" stroke="#7fa867" stroke-width="0.8"/></g>
+    <g id="spark" fill="#e9c878"><path d="M0 -5 L1 -1 5 0 1 1 0 5 -1 1 -5 0 -1 -1 Z"/></g>
+  </defs>
+
+  <!-- background -->
+  <rect x="0" y="0" width="640" height="480" rx="16" fill="url(#bg)"/>
+  <rect x="0" y="0" width="640" height="480" rx="16" fill="url(#sun)"/>
+
+  <!-- soft floating leaves + light -->
+  <use href="#leaf" x="84" y="96" transform="rotate(-18 84 96)"/>
+  <use href="#leaf" x="540" y="120" transform="rotate(22 540 120)"/>
+  <use href="#leaf" x="92" y="320" transform="rotate(12 92 320)"/>
+  <use href="#leaf" x="556" y="300" transform="rotate(-26 556 300)"/>
+  <use href="#spark" x="150" y="170"/>
+  <use href="#spark" x="500" y="200" transform="scale(0.8)"/>
+  <use href="#spark" x="320" y="70" transform="scale(0.7)"/>
+  <circle cx="120" cy="240" r="20" fill="#ffffff" opacity="0.18"/>
+  <circle cx="520" cy="150" r="14" fill="#ffffff" opacity="0.18"/>
+
+  <!-- ===== MAN (right, slightly behind) ===== -->
+  <g>
+    <path d="M348 480 L348 366 Q348 322 404 314 L470 314 Q516 320 516 366 L516 480 Z" fill="url(#topM)"/>
+    <path d="M404 314 L432 352 L460 314 Z" fill="#16304f"/>
+    <rect x="414" y="266" width="36" height="58" rx="16" fill="#e6b78f"/>
+    <!-- hair back -->
+    <path d="M340 198 Q334 128 408 122 Q482 128 476 198 Q470 146 408 146 Q350 146 340 198 Z" fill="url(#hairM)"/>
+    <!-- head (rounder) -->
+    <ellipse cx="408" cy="202" rx="56" ry="60" fill="url(#skinM)"/>
+    <ellipse cx="356" cy="208" rx="9" ry="13" fill="url(#skinM)"/>
+    <ellipse cx="460" cy="208" rx="9" ry="13" fill="url(#skinM)"/>
+    <!-- hair top with highlight -->
+    <path d="M350 200 Q346 134 408 128 Q470 134 466 200 Q452 168 408 170 Q372 168 358 198 Q354 192 350 200 Z" fill="url(#hairM)"/>
+    <path d="M388 138 Q372 152 366 176 Q386 160 408 164 Q400 146 388 138 Z" fill="#5a4233" opacity="0.55"/>
+    <!-- brows -->
+    <path d="M378 192 q12 -5 24 -1" stroke="#3a2a20" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M414 191 q12 -4 24 1" stroke="#3a2a20" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- big soft eyes -->
+    <ellipse cx="389" cy="210" rx="10" ry="12.5" fill="#fff"/>
+    <ellipse cx="427" cy="210" rx="10" ry="12.5" fill="#fff"/>
+    <circle cx="390" cy="212" r="8" fill="url(#irisM)"/>
+    <circle cx="426" cy="212" r="8" fill="url(#irisM)"/>
+    <circle cx="390" cy="213" r="3.4" fill="#1c120b"/>
+    <circle cx="426" cy="213" r="3.4" fill="#1c120b"/>
+    <circle cx="387" cy="207" r="2.8" fill="#fff"/>
+    <circle cx="423" cy="207" r="2.8" fill="#fff"/>
+    <circle cx="393" cy="216" r="1.4" fill="#fff" opacity="0.8"/>
+    <circle cx="429" cy="216" r="1.4" fill="#fff" opacity="0.8"/>
+    <!-- glasses -->
+    <g stroke="#2b3a4a" stroke-width="2.4" fill="none" opacity="0.9">
+      <rect x="374" y="198" width="31" height="25" rx="9"/>
+      <rect x="411" y="198" width="31" height="25" rx="9"/>
+      <path d="M405 208 q3 -3 6 0"/>
+    </g>
+    <!-- nose + gentle smile -->
+    <path d="M408 218 q-3 6 0 9" stroke="#d09e74" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M395 234 q13 11 26 0" stroke="#b06b46" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="384" cy="228" rx="9" ry="6" fill="url(#blush)"/>
+    <ellipse cx="432" cy="228" rx="9" ry="6" fill="url(#blush)"/>
+    <!-- soft beard hint -->
+    <path d="M380 234 Q408 264 436 234 Q436 252 408 258 Q380 252 380 234 Z" fill="#3a2a20" opacity="0.10"/>
+  </g>
+
+  <!-- ===== WOMAN (left, slightly in front) ===== -->
+  <g>
+    <!-- long hair back -->
+    <path d="M184 202 Q172 326 250 350 Q328 326 316 202 Q316 126 250 122 Q184 126 184 202 Z" fill="url(#hairW)"/>
+    <!-- top -->
+    <path d="M138 480 L138 366 Q138 320 196 312 L300 312 Q346 318 346 366 L346 480 Z" fill="url(#topW)"/>
+    <path d="M196 312 Q250 302 300 312 L300 320 Q250 310 196 320 Z" fill="#9a6483"/>
+    <rect x="232" y="270" width="36" height="56" rx="16" fill="#f3c4a0"/>
+    <!-- head (rounder) -->
+    <ellipse cx="250" cy="208" rx="57" ry="61" fill="url(#skinW)"/>
+    <ellipse cx="197" cy="214" rx="9" ry="13" fill="url(#skinW)"/>
+    <ellipse cx="303" cy="214" rx="9" ry="13" fill="url(#skinW)"/>
+    <!-- bangs + soft highlight -->
+    <path d="M192 204 Q188 138 250 132 Q312 138 308 204 Q302 166 270 164 Q258 148 244 164 Q220 164 210 192 Q200 188 192 204 Z" fill="url(#hairW)"/>
+    <path d="M232 140 Q214 156 210 184 Q230 166 252 168 Q246 148 232 140 Z" fill="#6a4c3a" opacity="0.5"/>
+    <path d="M194 198 Q186 286 206 326 L214 324 Q198 276 208 200 Z" fill="url(#hairW)"/>
+    <path d="M306 198 Q314 286 294 326 L286 324 Q302 276 292 200 Z" fill="url(#hairW)"/>
+    <!-- brows -->
+    <path d="M218 192 q12 -5 23 -1" stroke="#3a2a20" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <path d="M259 191 q11 -4 23 1" stroke="#3a2a20" stroke-width="2.8" fill="none" stroke-linecap="round"/>
+    <!-- big soft eyes -->
+    <ellipse cx="230" cy="212" rx="11" ry="14" fill="#fff"/>
+    <ellipse cx="270" cy="212" rx="11" ry="14" fill="#fff"/>
+    <circle cx="231" cy="214" r="9" fill="url(#irisW)"/>
+    <circle cx="269" cy="214" r="9" fill="url(#irisW)"/>
+    <circle cx="231" cy="215" r="3.8" fill="#241008"/>
+    <circle cx="269" cy="215" r="3.8" fill="#241008"/>
+    <circle cx="227" cy="208" r="3.2" fill="#fff"/>
+    <circle cx="265" cy="208" r="3.2" fill="#fff"/>
+    <circle cx="234" cy="218" r="1.6" fill="#fff" opacity="0.85"/>
+    <circle cx="272" cy="218" r="1.6" fill="#fff" opacity="0.85"/>
+    <!-- upper lashes -->
+    <path d="M219 204 q11 -7 22 -2" stroke="#2c2118" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <path d="M259 202 q11 -5 22 2" stroke="#2c2118" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <!-- nose + smile -->
+    <path d="M250 218 q-2 6 0 8" stroke="#dca47c" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.7"/>
+    <path d="M239 236 q11 10 22 0" stroke="#bb6a48" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="224" cy="230" rx="10" ry="6.5" fill="url(#blush)"/>
+    <ellipse cx="276" cy="230" rx="10" ry="6.5" fill="url(#blush)"/>
+  </g>
+
+  <!-- heart between them -->
+  <path d="M326 150 l7 8 7 -8 a6 6 0 0 0 -9 -3.6 a6 6 0 0 0 -5 3.6 z" transform="translate(-7 -8)" fill="#e25b6a"/>
+
+  <!-- ===== custom slab they present ===== -->
+  <g transform="translate(324 396) rotate(-6) scale(0.66)">
+    <ellipse cx="0" cy="150" rx="100" ry="15" fill="#000" opacity="0.10"/>
+    <rect x="-75" y="-120" width="150" height="240" rx="16" fill="#fff" stroke="#e7d9c2" stroke-width="2"/>
+    <rect x="-62" y="-108" width="124" height="26" rx="6" fill="#0a1020"/>
+    <rect x="-56" y="-100" width="54" height="4.5" rx="2" fill="#d8b25a"/>
+    <rect x="-56" y="-92" width="38" height="3" rx="1.5" fill="#6b7790"/>
+    <rect x="34" y="-104" width="24" height="18" rx="4" fill="url(#gold)"/>
+    <text x="46" y="-91" font-family="Poppins, Arial, sans-serif" font-size="12" font-weight="800" fill="#1a1206" text-anchor="middle">10</text>
+    <rect x="-62" y="-74" width="124" height="184" rx="9" fill="url(#holo)"/>
+    <g fill="#0a1322" fill-opacity="0.26">
+      <circle cx="-14" cy="2" r="20"/><path d="M-44 70 q30 -42 60 0 z"/>
+      <circle cx="26" cy="14" r="15"/><path d="M6 70 q20 -30 40 0 z"/>
+    </g>
+    <path d="M28 -16 l5 6 5 -6 a4 4 0 0 0 -6.4 -2.6 a4 4 0 0 0 -3.6 2.6 z" fill="#fff" fill-opacity="0.85"/>
+  </g>
+</svg>

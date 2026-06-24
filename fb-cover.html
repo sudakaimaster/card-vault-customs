@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{width:1640px;height:624px;overflow:hidden;}
+  .cover{
+    position:relative;width:1640px;height:624px;
+    font-family:'Inter',system-ui,sans-serif;
+    background:
+      radial-gradient(900px 600px at 18% 12%, rgba(216,178,90,0.30), transparent 55%),
+      radial-gradient(1000px 700px at 90% 95%, rgba(120,150,255,0.18), transparent 60%),
+      linear-gradient(135deg,#142a4d 0%,#0c1322 55%,#0a1020 100%);
+    background-color:#0c1322;
+    overflow:hidden;
+  }
+  /* holo wash */
+  .cover::before{
+    content:"";position:absolute;inset:0;opacity:.10;mix-blend-mode:screen;
+    background:conic-gradient(from 200deg at 75% 30%,#78c8ff,#b478ff,#78ffc8,#ffdc78,#78c8ff);
+  }
+  .sparkle{position:absolute;color:#e6c878;opacity:.85;}
+
+  .content{position:absolute;left:96px;top:50%;transform:translateY(-50%);width:830px;z-index:3;}
+  .brandrow{display:flex;align-items:center;gap:16px;margin-bottom:26px;}
+  .brandrow .wm{font-family:'Poppins';font-weight:800;letter-spacing:4px;color:#fff;font-size:30px;}
+  .brandrow .wm i{color:#e6c878;font-style:normal;}
+  .tagline{font-family:'Poppins';font-weight:800;color:#fff;font-size:64px;line-height:1.04;letter-spacing:.5px;margin-bottom:24px;}
+  .tagline .gold{color:#e6c878;}
+  .sub{color:#c4ccda;font-size:21px;line-height:1.5;max-width:660px;margin-bottom:30px;}
+  .pill{display:inline-flex;align-items:center;gap:10px;background:#e6c878;color:#1a1206;font-weight:700;font-size:17px;padding:13px 24px;border-radius:999px;font-family:'Poppins';}
+  .handle{margin-top:22px;color:#9aa7bd;font-size:18px;letter-spacing:.5px;}
+
+  /* fanned cards on the right */
+  .cards{position:absolute;right:60px;top:50%;transform:translateY(-50%);width:760px;height:624px;z-index:2;}
+  .cards img{position:absolute;border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,0.55);}
+  .c1{height:430px;top:96px;right:300px;transform:rotate(-9deg);z-index:1;}
+  .c2{height:500px;top:62px;right:120px;transform:rotate(2deg);z-index:3;}
+  .c3{height:430px;top:96px;right:-40px;transform:rotate(11deg);z-index:1;}
+  /* soft fade so cards blend into bg on far right edge */
+  .vignette{position:absolute;inset:0;z-index:4;pointer-events:none;
+    background:linear-gradient(90deg, rgba(12,19,34,0.0) 55%, rgba(12,19,34,0.0) 100%);}
+</style>
+</head>
+<body>
+  <div class="cover">
+    <div class="sparkle" style="left:60px;top:70px;font-size:26px;">✦</div>
+    <div class="sparkle" style="left:780px;top:54px;font-size:18px;">✦</div>
+    <div class="sparkle" style="left:120px;bottom:70px;font-size:20px;">✦</div>
+    <div class="sparkle" style="right:560px;bottom:90px;font-size:22px;">✦</div>
+
+    <div class="content">
+      <div class="brandrow">
+        <svg width="40" height="54" viewBox="0 0 58 78" aria-hidden="true">
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#ffffff" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#e6c878"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#ffffff" stroke-width="4" stroke-linejoin="round"/>
+        </svg>
+        <div class="wm">CARD<i>VAULT</i>CUSTOMS</div>
+      </div>
+      <div class="tagline">Your Photo.<br>Your Card.<br><span class="gold">Slabbed Forever.</span></div>
+      <div class="sub">Handmade custom Pokémon, One Piece &amp; family trading cards — sealed in premium display slabs.</div>
+      <div class="pill">★ Free design proof on every order</div>
+      <div class="handle">@cardvaultcustoms</div>
+    </div>
+
+    <div class="cards">
+      <img class="c1" src="images/slab-crew-jump.png" alt="" />
+      <img class="c3" src="images/slab-girls.png" alt="" />
+      <img class="c2" src="images/slab-boys-glasses.png" alt="" />
+    </div>
+    <div class="vignette"></div>
+  </div>
+</body>
+</html>
