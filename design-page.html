@@ -114,6 +114,9 @@
 
   .totbar{display:flex;justify-content:flex-end;align-items:baseline;gap:10px;margin-top:8px;font-size:14px;color:var(--muted);}
   .totbar b{font-family:var(--font-display);font-size:22px;color:var(--gold);}
+  .totnote{text-align:right;font-size:12.5px;color:var(--muted);margin-top:4px;min-height:16px;}
+  .totnote .disc{color:var(--gold);font-weight:700;}
+  .summary .line.disc span:last-child{color:var(--gold);font-weight:700;}
 
   /* review summary */
   .summary{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--field);font-size:14px;}
@@ -142,7 +145,7 @@
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 Free — code BUY2GET1 ★</div>
+  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 — 50% Off (auto-applied) ★</div>
 
   <header class="site">
     <div class="wrap nav">
@@ -227,7 +230,8 @@
         </label>
       </div>
 
-      <div class="totbar">Subtotal: <b id="tot1">$49.99</b></div>
+      <div class="totbar">Total: <b id="tot1">$49.99</b></div>
+      <div class="totnote" id="totnote"></div>
       <div class="row-btns">
         <span></span>
         <button class="btn btn-gold" id="to2">Next: Design →</button>
@@ -279,7 +283,7 @@
 
   <footer>
     <div class="wrap">
-      <div>© 2026 Card Vault Customs · <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" style="color:var(--gold);">@cardvaultcustoms</a></div>
+      <div>© 2026 Card Vault Customs · <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" style="color:var(--gold);">@cardvaultcustoms</a> · <a href="mailto:cardvaultcustoms@gmail.com" style="color:var(--gold);">cardvaultcustoms@gmail.com</a></div>
       <div class="disc">Custom fan-made novelty items. Not authentic PSA/BGS/CGC graded cards and not affiliated with Pokémon, The Pokémon Company, Bandai, or One Piece.</div>
     </div>
   </footer>
@@ -310,14 +314,55 @@
     var cards = [];          // one entry per card unit
     var orderTotal = 0;
 
+    /* ---------- pricing rules ---------- */
+    var SHIP_FEE = 15.99;      // flat shipping under the free threshold
+    var FREE_SHIP_MIN = 75;    // free shipping at/above this merchandise subtotal
+    var PROMO_EVERY = 3;       // Buy 2 Get 1: 1 in every 3 cards is discounted
+    var PROMO_OFF = 0.5;       // ...at 50% off (applied to the cheapest cards)
+
     function money(n){ return '$' + n.toFixed(2); }
+    function r2(n){ return Math.round(n*100)/100; }
+
+    // Single source of truth for the math (used by the live total, the
+    // review summary, and the line items we send to Stripe).
+    function computeOrder(){
+      var list = [];
+      var i;
+      for(i=0;i<qty.slab;i++) list.push({ type:'slab', name:PRODUCTS.slab.name, price:PRODUCTS.slab.price });
+      for(i=0;i<qty.raw;i++)  list.push({ type:'raw',  name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price  });
+
+      // Buy 2 Get 1 — 50% off the cheapest 1 of every 3 cards.
+      var byCheapest = list.map(function(_,idx){ return idx; })
+        .sort(function(a,b){ return list[a].price - list[b].price; });
+      var freeCount = Math.floor(list.length / PROMO_EVERY);
+      for(i=0;i<freeCount;i++){ list[byCheapest[i]].discounted = true; }
+      list.forEach(function(c){ c.charged = c.discounted ? r2(c.price*PROMO_OFF) : c.price; });
+
+      var itemsSubtotal = r2(list.reduce(function(s,c){ return s + c.price; }, 0));
+      var discount      = r2(list.reduce(function(s,c){ return s + (c.price - c.charged); }, 0));
+      var addonsTotal   = r2(addons.reduce(function(s,a){ return s + a.price; }, 0));
+      var merch         = r2(itemsSubtotal - discount + addonsTotal);
+      var shipping      = (merch >= FREE_SHIP_MIN) ? 0 : SHIP_FEE;
+      var total         = r2(merch + shipping);
+
+      return { list:list, itemsSubtotal:itemsSubtotal, discount:discount,
+               addonsTotal:addonsTotal, merch:merch, shipping:shipping,
+               total:total, freeCount:freeCount };
+    }
 
     /* ---------- Step 1: quantities + add-ons ---------- */
     function recalc(){
-      var t = qty.slab*PRODUCTS.slab.price + qty.raw*PRODUCTS.raw.price;
-      addons.forEach(function(a){ t += a.price; });
-      orderTotal = t;
-      $('tot1').textContent = money(t);
+      var o = computeOrder();
+      orderTotal = o.total;
+      $('tot1').textContent = money(o.total);
+
+      var bits = [];
+      var n = qty.slab + qty.raw;
+      if(n > 0) bits.push(n + (n===1 ? ' card' : ' cards'));
+      if(o.discount > 0) bits.push('<span class="disc">Buy 2 Get 1: −' + money(o.discount) + '</span>');
+      if(n > 0) bits.push(o.shipping > 0 ? ('+' + money(o.shipping) + ' shipping') : 'Free shipping');
+      $('totnote').innerHTML = bits.join(' · ');
+
       document.querySelectorAll('.choice').forEach(function(c){
         c.classList.toggle('has', qty[c.getAttribute('data-product')] > 0);
       });
@@ -460,23 +505,43 @@
     $('back2').addEventListener('click', function(){ showStep(2); });
 
     /* ---------- summary + payload ---------- */
+    // Stripe can't take a negative discount line, so the promo is baked into the
+    // charged price of the discounted cards. These line items sum to the total.
     function buildLineItems(){
-      var li = [];
-      if(qty.slab>0) li.push({ name:PRODUCTS.slab.name, price:PRODUCTS.slab.price, qty:qty.slab });
-      if(qty.raw>0)  li.push({ name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price,  qty:qty.raw  });
+      var o = computeOrder();
+      var groups = {};
+      o.list.forEach(function(c){
+        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (50% off)' : '');
+        var key = label + '|' + c.charged;
+        if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
+        groups[key].qty++;
+      });
+      var li = Object.keys(groups).map(function(k){ return groups[k]; });
       addons.forEach(function(a){ li.push({ name:a.name, price:a.price, qty:1 }); });
+      if(o.shipping > 0) li.push({ name:'Shipping', price:o.shipping, qty:1 });
       return li;
     }
     function summaryText(){
+      var o = computeOrder();
       var parts = [];
       if(qty.slab>0) parts.push(qty.slab+'× Slab');
       if(qty.raw>0)  parts.push(qty.raw+'× Raw');
       addons.forEach(function(a){ parts.push(a.name); });
-      return parts.join(', ');
+      var s = parts.join(', ');
+      if(o.discount>0) s += ' · Buy2Get1 -'+money(o.discount);
+      s += o.shipping>0 ? (' · Ship '+money(o.shipping)) : ' · Free ship';
+      return s;
     }
     function gatherDetails(){
+      var o = computeOrder();
       return {
-        currency:'CAD', total:orderTotal, cardCount:cards.length,
+        currency:'CAD',
+        total:o.total,                 // full amount charged (what Stripe collects)
+        subtotal:o.merch,              // product revenue after discount (Gross Sales)
+        itemsSubtotal:o.itemsSubtotal,
+        discount:o.discount,
+        shipping:o.shipping,
+        cardCount:cards.length,
         summary:summaryText(), lineItems:buildLineItems(), addons:addons,
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
         cards:cards.map(function(c){
@@ -486,31 +551,75 @@
       };
     }
     function buildSummary(){
+      var o = computeOrder();
       var html = '';
       if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
       addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
+      if(o.discount>0) html += '<div class="line disc"><span>Buy 2 Get 1 — 50% off</span><span>−'+money(o.discount)+'</span></div>';
+      html += '<div class="line"><span>Shipping'+(o.shipping>0?'':' (over $75)')+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){
         html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+c.style+' · '+c.occasion+' · '+c.photos.length+' photo(s)</span></div>';
       });
       html += '<div class="line"><span>Proof via</span><span>'+$('proofMethod').value+' · '+$('proofContact').value.trim()+'</span></div>';
-      html += '<div class="line tot"><span>Total</span><span>'+money(orderTotal)+' CAD</span></div>';
+      html += '<div class="line tot"><span>Total</span><span>'+money(o.total)+' CAD</span></div>';
       $('summary').innerHTML = html;
     }
 
     /* ---------- submit ---------- */
+    var submitting = false;
     $('pay').addEventListener('click', function(){
+      if(submitting) return;
       if(APPS_SCRIPT_URL.indexOf('PASTE_') === 0){ alert('Setup not finished: the Apps Script URL hasn\'t been added yet.'); return; }
       var d = gatherDetails();
+      submitting = true;
       $('overlay').classList.add('show');
       $('ovErr').textContent = '';
-      fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(d) })
+
+      // Live progress so the wait never feels frozen (the backend can take ~20s).
+      var t0 = Date.now();
+      $('ovText').textContent = 'Saving your order & preparing checkout…';
+      var tick = setInterval(function(){
+        var s = Math.round((Date.now() - t0) / 1000);
+        var msg = 'Preparing your secure checkout…';
+        if(s >= 6)  msg = 'Almost there — opening secure checkout… (' + s + 's)';
+        if(s >= 15) msg = 'Still working — hang tight… (' + s + 's)';
+        $('ovText').textContent = msg;
+      }, 1000);
+
+      // Safety timeout so it can never spin forever.
+      var ctrl = (typeof AbortController !== 'undefined') ? new AbortController() : null;
+      var killed = false;
+      var timeout = setTimeout(function(){
+        killed = true;
+        if(ctrl) ctrl.abort();
+      }, 90000);
+
+      function done(){ clearInterval(tick); clearTimeout(timeout); }
+      function fail(msg){
+        done();
+        submitting = false;
+        $('ovErr').textContent = msg;
+      }
+
+      fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(d), signal: ctrl ? ctrl.signal : undefined })
         .then(function(r){ return r.json(); })
         .then(function(res){
-          if(res && res.checkoutUrl){ window.location.href = res.checkoutUrl; }
-          else { throw new Error(res && res.error ? res.error : 'Unexpected response'); }
+          if(res && res.checkoutUrl){
+            done();
+            $('ovText').textContent = 'Redirecting to secure checkout…';
+            window.location.href = res.checkoutUrl;
+          } else {
+            throw new Error(res && res.error ? res.error : 'Unexpected response');
+          }
         })
-        .catch(function(err){ $('ovErr').textContent = 'Something went wrong: ' + err.message + '. Please try again or DM us on Instagram.'; });
+        .catch(function(err){
+          if(killed){
+            fail('This is taking longer than usual. Your order may still have gone through — please check your email, or DM us on Instagram before paying again.');
+          } else {
+            fail('Something went wrong: ' + err.message + '. Please try again or DM us on Instagram.');
+          }
+        });
     });
 
     recalc();
