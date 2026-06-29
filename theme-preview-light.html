@@ -6,14 +6,14 @@
 <title>Card Vault Customs — Theme Preview</title>
 <style>
   :root {
-    --bg: #f7f8fb;            /* soft off-white */
-    --bg-2: #ffffff;          /* clean white panels */
-    --ink: #0c1322;           /* deep vault navy text */
-    --muted: #5b6678;         /* secondary gray-navy */
-    --gold: #b8923a;          /* slightly deeper gold for contrast on white */
-    --gold-soft: #d8b25a;
+    --bg: #0a0e17;            /* deep vault black-navy (matches logo) */
+    --bg-2: #131a28;          /* dark panel */
+    --ink: #eef1f7;           /* near-white text */
+    --muted: #9aa6bd;         /* soft light gray */
+    --gold: #d8b25a;          /* brighter gold pops on dark */
+    --gold-soft: #e8c97a;
     --navy: #0c1322;          /* accent navy for slab label */
-    --line: rgba(12,19,34,0.10);
+    --line: rgba(255,255,255,0.12);
     --slab-plastic: #ffffff;
     --radius: 14px;
     --font-display: "Poppins", "Trebuchet MS", system-ui, sans-serif;
@@ -23,7 +23,9 @@
   html { scroll-behavior: smooth; }
   body {
     font-family: var(--font-body);
-    background: var(--bg);
+    background:
+      radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.10), transparent 60%),
+      var(--bg);
     color: var(--ink);
     line-height: 1.55;
     -webkit-font-smoothing: antialiased;
@@ -47,7 +49,7 @@
   /* ---------- Header ---------- */
   header.site {
     position: sticky; top: 0; z-index: 50;
-    background: rgba(255,255,255,0.88);
+    background: rgba(10,14,23,0.82);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid var(--line);
   }
@@ -190,15 +192,15 @@
 </head>
 <body>
 
-  <div class="announce">★ Free shipping on orders over $50 &nbsp;·&nbsp; Buy 2 Get 1 Free — code BUY2GET1 ★</div>
+  <div class="announce">★ Free shipping on orders over $75 &nbsp;·&nbsp; Buy 2 Get 1 Free — code BUY2GET1 ★</div>
 
   <header class="site">
     <div class="wrap nav">
       <div class="logo">
         <svg class="logo-icon" width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
-          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#0c1322" stroke-width="4"/>
-          <rect x="11" y="11" width="36" height="11" rx="3" fill="#b8923a"/>
-          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#0c1322" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#e8ecf3" stroke-width="4" stroke-linejoin="round"/>
         </svg>
         <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
       </div>
@@ -258,13 +260,13 @@
           <div class="mini-slab"><img src="images/slab-girls.png" alt="Custom graded card slab example — Dad & The Girls" /></div>
           <div class="tag">Best Seller</div>
           <h3>Custom Graded Card Slab</h3>
-          <div class="price">$59.00 <s>$85.00</s></div>
+          <div class="price">$49.99</div>
         </a>
         <a href="design-page.html" class="product">
           <div class="mini-slab"><img src="images/card-raw-holo.png" alt="Custom raw card example — Dad & The Crew holo" /></div>
           <div class="tag">Most Affordable</div>
           <h3>Custom Card (Raw)</h3>
-          <div class="price">$27.00</div>
+          <div class="price">$34.99</div>
         </a>
       </div>
     </div>
@@ -315,9 +317,9 @@
         <div class="foot-col">
           <div class="logo" style="font-size:17px;margin-bottom:14px;">
             <svg class="logo-icon" width="20" height="27" viewBox="0 0 58 78" aria-hidden="true">
-              <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#0c1322" stroke-width="4"/>
-              <rect x="11" y="11" width="36" height="11" rx="3" fill="#b8923a"/>
-              <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#0c1322" stroke-width="4" stroke-linejoin="round"/>
+              <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
+              <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
+              <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#e8ecf3" stroke-width="4" stroke-linejoin="round"/>
             </svg>
             <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
           </div>

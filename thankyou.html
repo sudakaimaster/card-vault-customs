@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Thank You — Card Vault Customs</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
+  :root{--bg:#0a0e17;--bg-2:#131a28;--ink:#eef1f7;--muted:#9aa6bd;--gold:#d8b25a;--gold-soft:#e8c97a;--line:rgba(255,255,255,0.12);}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;background:radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.12), transparent 60%),var(--bg);color:var(--ink);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 50px rgba(0,0,0,0.4);max-width:520px;text-align:center;padding:48px 40px;}
+  .badge{width:72px;height:72px;border-radius:50%;background:rgba(216,178,90,0.12);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 22px;}
+  h1{font-family:'Poppins',sans-serif;font-size:28px;font-weight:800;margin-bottom:10px;}
+  p{color:var(--muted);font-size:15px;margin-bottom:8px;}
+  .order{font-size:13px;color:var(--muted);margin:16px 0 24px;}
+  .order b{color:var(--ink);}
+  .steps{text-align:left;background:#0e1420;border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin:22px 0;font-size:14px;}
+  .steps li{margin:8px 0;}
+  .btn{display:inline-block;background:var(--gold);color:#1a1206;font-family:'Poppins',sans-serif;font-weight:700;padding:13px 28px;border-radius:999px;text-decoration:none;}
+  .btn:hover{background:var(--gold-soft);}
+  a.ig{color:var(--gold);text-decoration:none;}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="badge">
+      <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2.4"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <h1>Thank you! 🎉</h1>
+    <p>Your order is in and your payment was received.</p>
+    <div class="order">Order reference: <b id="orderRef">—</b></div>
+
+    <ul class="steps">
+      <li>✏️ We'll start designing your custom card.</li>
+      <li>📩 You'll get a <b>free design proof</b> (by text or email) within 48 hours.</li>
+      <li>✅ Once you approve it, we print &amp; ship within 48 hours.</li>
+    </ul>
+
+    <p>Questions? DM us anytime on <a class="ig" href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener">@cardvaultcustoms</a></p>
+    <p style="margin-top:22px;"><a class="btn" href="theme-preview-light.html">Back to home</a></p>
+  </div>
+
+  <script>
+    var params = new URLSearchParams(window.location.search);
+    var o = params.get('order');
+    if(o){ document.getElementById('orderRef').textContent = o; }
+  </script>
+</body>
+</html>

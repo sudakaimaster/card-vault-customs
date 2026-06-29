@@ -7,135 +7,150 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
   :root{
-    --bg:#f7f8fb; --bg-2:#ffffff; --ink:#0c1322; --muted:#5b6678;
-    --gold:#b8923a; --gold-soft:#d8b25a; --navy:#0c1322;
-    --line:#e4e7ee; --radius:14px;
+    --bg:#0a0e17; --bg-2:#131a28; --ink:#eef1f7; --muted:#9aa6bd;
+    --gold:#d8b25a; --gold-soft:#e8c97a; --navy:#0c1322;
+    --line:rgba(255,255,255,0.12); --field:#0e1420; --radius:14px;
     --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
+  body{font-family:var(--font-body);background:radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.10), transparent 60%),var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
   h1,h2,h3{font-family:var(--font-display);}
   a{color:inherit;text-decoration:none;}
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px;}
+  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
 
-  /* announcement + header */
   .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
-  header.site{position:sticky;top:0;z-index:50;background:rgba(255,255,255,0.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  header.site{position:sticky;top:0;z-index:50;background:rgba(10,14,23,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
   .nav{display:flex;align-items:center;justify-content:space-between;height:70px;}
   .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
   .logo .wm i{color:var(--gold);font-style:normal;}
   .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
   .nav-links a:hover{color:var(--ink);}
-  .cart{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
+  .ig{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
+  .ig:hover{border-color:var(--gold);}
 
-  /* breadcrumb */
-  .crumb{padding:22px 0 6px;color:var(--muted);font-size:13px;}
-  .crumb b{color:var(--ink);}
+  /* progress steps */
+  .steps-bar{display:flex;justify-content:center;gap:8px;margin:30px auto 6px;flex-wrap:wrap;}
+  .pill{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:var(--muted);padding:7px 14px;border:1px solid var(--line);border-radius:999px;background:var(--bg-2);}
+  .pill .n{width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,0.16);color:var(--ink);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}
+  .pill.active{color:var(--ink);border-color:var(--gold);}
+  .pill.active .n{background:var(--gold);color:#1a1206;}
+  .pill.done .n{background:var(--gold);color:#1a1206;}
 
-  /* product layout */
-  .product{display:grid;grid-template-columns:0.95fr 1.05fr;gap:48px;padding:18px 0 70px;align-items:start;}
+  .panel{background:var(--bg-2);border:1px solid var(--line);border-radius:18px;box-shadow:0 24px 50px rgba(0,0,0,0.35);padding:34px;margin:18px auto 26px;}
+  .panel h2{font-size:24px;font-weight:800;margin-bottom:4px;}
+  .panel .sub{color:var(--muted);font-size:14.5px;margin-bottom:24px;}
+  .hidden{display:none;}
 
-  /* left: slab preview */
-  .media{position:sticky;top:96px;}
-  .slab{position:relative;width:330px;margin:0 auto;background:#fff;border:1px solid rgba(12,19,34,0.10);border-radius:18px;padding:14px 14px 18px;box-shadow:0 24px 50px rgba(12,19,34,0.16),inset 0 1px 0 rgba(255,255,255,0.9);}
-  .slab-label{display:flex;align-items:center;justify-content:space-between;background:#0a1020;border:1px solid var(--line);border-radius:8px;padding:9px 12px;margin-bottom:12px;}
-  .slab-label .brand{font-family:var(--font-display);font-weight:800;font-size:10.5px;letter-spacing:1.5px;color:var(--gold);}
-  .slab-label .sub{font-size:8.5px;color:#9aa7bd;letter-spacing:1px;}
-  .grade-badge{text-align:center;background:var(--gold);color:#1a1206;border-radius:6px;padding:4px 9px;font-family:var(--font-display);font-weight:800;line-height:1;}
-  .grade-badge b{font-size:18px;display:block;}
-  .grade-badge small{font-size:7px;letter-spacing:1px;}
-  .slab-window{aspect-ratio:5/7;border-radius:10px;overflow:hidden;border:1px solid rgba(12,19,34,0.14);background:#e9ecf2;display:flex;align-items:center;justify-content:center;padding:12px;}
-  /* live card preview */
-  .card-inner{position:relative;width:100%;height:100%;border-radius:8px;overflow:hidden;border:3px solid #f1d97a;background:#dfe3ea;transition:border-color .2s ease;}
-  .card-photo{position:absolute;inset:0;background-size:cover;background-position:center;background-color:#dfe3ea;display:flex;align-items:center;justify-content:center;text-align:center;}
-  .card-ph{color:rgba(12,19,34,0.45);font-size:12px;font-family:var(--font-display);font-weight:600;padding:0 22px;line-height:1.5;}
-  .card-photo.has-photo .card-ph{display:none;}
-  .card-inner::after{content:"";position:absolute;inset:0;pointer-events:none;mix-blend-mode:screen;opacity:.5;transition:opacity .2s ease;}
-  .finish-holo::after{background:conic-gradient(from 200deg at 70% 80%,rgba(120,200,255,0.95),rgba(180,120,255,0.85),rgba(120,255,200,0.8),rgba(255,220,120,0.85),rgba(120,200,255,0.95));}
-  .finish-foil::after{background:linear-gradient(115deg,rgba(255,0,128,0.55),rgba(255,200,0,0.55),rgba(0,200,255,0.55),rgba(180,0,255,0.55));}
-  .finish-matte::after{opacity:0;}
-  .finish-glossy::after{background:linear-gradient(135deg,rgba(255,255,255,0.7),rgba(255,255,255,0) 42%);mix-blend-mode:normal;opacity:.8;}
-  .border-classic{border-color:#f1d97a;} .border-gold{border-color:#b8923a;}
-  .border-silver{border-color:#c7ccd9;} .border-black{border-color:#1a1f2b;}
-  .border-none{border-color:transparent;border-width:0;}
-  .thumbs{display:flex;gap:10px;justify-content:center;margin-top:18px;}
-  .thumbs div{width:54px;height:54px;border-radius:8px;border:1px solid var(--line);background:#fff;}
-  .thumbs div.active{border-color:var(--gold);}
+  /* product choice cards */
+  .choices{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+  .choice{border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;background:rgba(255,255,255,0.03);}
+  .choice:hover{transform:translateY(-2px);border-color:var(--gold-soft);}
+  .choice.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
+  .choice img{width:100%;height:190px;object-fit:contain;border-radius:10px;background:#0a1020;margin-bottom:12px;}
+  .choice .ttl{font-family:var(--font-display);font-weight:700;font-size:16px;}
+  .choice .pr{color:var(--gold);font-weight:700;margin-top:2px;}
+  .choice .pr s{color:var(--muted);font-weight:400;font-size:13px;margin-left:6px;}
+  .choice .desc{color:var(--muted);font-size:13px;margin-top:6px;}
+  .choice.has{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
+  .qtyrow{display:flex;align-items:center;justify-content:space-between;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
+  .qtyrow .lbl{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .stepper{display:flex;align-items:center;}
+  .stepper button{width:34px;height:34px;border:1px solid var(--line);background:rgba(255,255,255,0.04);color:var(--ink);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .stepper button:first-child{border-radius:9px 0 0 9px;}
+  .stepper button:last-child{border-radius:0 9px 9px 0;}
+  .stepper button:hover{border-color:var(--gold);color:var(--gold);}
+  .stepper .q{min-width:44px;height:34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display);font-size:16px;}
 
-  /* right: form */
-  .pinfo .tag{display:inline-block;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(184,146,58,0.4);padding:3px 9px;border-radius:999px;margin-bottom:12px;}
-  .pinfo h1{font-size:30px;font-weight:800;line-height:1.15;margin-bottom:10px;}
-  .price{font-size:22px;font-weight:700;color:var(--gold);margin-bottom:4px;}
-  .price s{color:var(--muted);font-weight:400;font-size:16px;margin-left:8px;}
-  .ship-note{color:var(--muted);font-size:13px;margin-bottom:22px;}
+  /* per-card design blocks */
+  .cardblock{border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;background:rgba(255,255,255,0.02);}
+  .cardhead{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .cardhead .cb-n{font-family:var(--font-display);font-weight:800;font-size:17px;}
+  .cardhead .cb-type{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(216,178,90,0.4);padding:3px 9px;border-radius:999px;}
+  .ordercontact{border-top:1px solid var(--line);margin-top:8px;padding-top:20px;}
 
-  /* format toggle (raw vs slab) */
-  .seg{display:flex;gap:10px;}
-  .seg button{flex:1;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px 14px;cursor:pointer;font-family:var(--font-body);font-size:14px;font-weight:700;color:var(--ink);text-align:left;transition:border-color .15s ease,background .15s ease,box-shadow .15s ease;}
-  .seg button .sp{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px;}
-  .seg button.active{border-color:var(--gold);background:#fcfaf4;box-shadow:0 0 0 1px var(--gold) inset;}
+  /* add-ons */
+  .addons{margin-top:26px;}
+  .addons h3{font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:12px;font-family:var(--font-body);font-weight:700;}
+  .addon{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:11px;padding:13px 15px;margin-bottom:10px;cursor:pointer;transition:border-color .15s ease;}
+  .addon:hover{border-color:var(--gold-soft);}
+  .addon.sel{border-color:var(--gold);background:rgba(216,178,90,0.12);}
+  .addon input{width:18px;height:18px;accent-color:var(--gold);}
+  .addon .ai{flex:1;}
+  .addon .ai b{font-weight:600;font-size:14px;}
+  .addon .ai span{display:block;color:var(--muted);font-size:12.5px;}
+  .addon .ap{color:var(--gold);font-weight:700;font-size:14px;}
 
-  /* raw mode = hide slab casing, show just the card */
-  .slab.is-raw{background:transparent;border:none;box-shadow:none;padding:0;}
-  .slab.is-raw .slab-label{display:none;}
-  .slab.is-raw .slab-window{border:none;background:transparent;padding:0;}
-
-  .one-col{grid-template-columns:1fr !important;}
-
-  .form{display:flex;flex-direction:column;gap:18px;}
+  /* fields */
+  .field{margin-bottom:18px;}
   .field label{display:block;font-weight:600;font-size:14px;margin-bottom:6px;}
   .field .hint{color:var(--muted);font-size:12.5px;font-weight:400;margin-left:6px;}
-  .field .req{color:var(--gold);}
+  .req{color:var(--gold);}
   select,input[type=text],input[type=tel],input[type=email],textarea{
     width:100%;font-family:var(--font-body);font-size:14px;color:var(--ink);
-    background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 13px;outline:none;transition:border-color .15s ease;
+    background:var(--field);border:1px solid var(--line);border-radius:10px;padding:12px 13px;outline:none;transition:border-color .15s ease;
   }
+  select option{background:#0e1420;color:var(--ink);}
+  ::placeholder{color:#6b7689;}
   select:focus,input:focus,textarea:focus{border-color:var(--gold);}
-  textarea{resize:vertical;min-height:104px;}
+  textarea{resize:vertical;min-height:110px;}
   .two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
-  /* upload */
-  .upload{border:1.5px dashed #c7ccd9;border-radius:12px;padding:22px;text-align:center;color:var(--muted);cursor:pointer;transition:border-color .15s ease,background .15s ease;}
-  .upload:hover{border-color:var(--gold);background:#fcfaf4;}
-  .upload .ic{width:30px;height:30px;margin:0 auto 8px;display:block;}
+  .upload{border:1.5px dashed rgba(255,255,255,0.25);border-radius:12px;padding:24px;text-align:center;color:var(--muted);cursor:pointer;transition:border-color .15s ease,background .15s ease;display:block;}
+  .upload:hover{border-color:var(--gold);background:rgba(216,178,90,0.08);}
   .upload b{color:var(--ink);}
+  .previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;}
+  .previews .pv{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--line);}
+  .previews .pv img{width:100%;height:100%;object-fit:cover;}
+  .previews .pv button{position:absolute;top:2px;right:2px;width:18px;height:18px;border:none;border-radius:50%;background:rgba(12,19,34,0.8);color:#fff;font-size:11px;cursor:pointer;line-height:1;}
 
-  /* qty + add */
-  .buybar{display:flex;gap:14px;align-items:stretch;margin-top:6px;}
-  .qty{display:flex;align-items:center;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff;}
-  .qty button{width:42px;height:50px;border:none;background:#fff;font-size:20px;color:var(--ink);cursor:pointer;}
-  .qty button:hover{background:#f2f3f7;}
-  .qty input{width:46px;text-align:center;border:none;font-size:16px;font-weight:600;}
-  .add{flex:1;background:var(--gold);color:#1a1206;border:none;border-radius:999px;font-family:var(--font-display);font-weight:700;font-size:16px;letter-spacing:.3px;cursor:pointer;transition:transform .15s ease,background .15s ease;}
-  .add:hover{background:var(--gold-soft);transform:translateY(-2px);}
+  /* nav buttons + summary */
+  .row-btns{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px;}
+  .btn{border:none;border-radius:999px;font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.3px;cursor:pointer;padding:14px 30px;transition:transform .15s ease,background .15s ease;}
+  .btn-gold{background:var(--gold);color:#1a1206;}
+  .btn-gold:hover{background:var(--gold-soft);transform:translateY(-2px);}
+  .btn-gold:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+  .btn-ghost{background:transparent;color:var(--ink);border:1px solid var(--line);}
+  .btn-ghost:hover{border-color:var(--gold);}
 
-  .reassure{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px;color:var(--muted);font-size:12.5px;}
-  .reassure span{display:flex;align-items:center;gap:6px;}
-  .reassure svg{flex:none;}
+  .totbar{display:flex;justify-content:flex-end;align-items:baseline;gap:10px;margin-top:8px;font-size:14px;color:var(--muted);}
+  .totbar b{font-family:var(--font-display);font-size:22px;color:var(--gold);}
 
-  /* add-to-cart confirmation toast */
-  .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);background:#0c1322;color:#fff;padding:14px 22px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 14px 34px rgba(12,19,34,0.35);opacity:0;pointer-events:none;transition:opacity .25s ease,transform .25s ease;z-index:200;display:flex;align-items:center;gap:10px;}
-  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-  .toast svg{flex:none;}
+  /* review summary */
+  .summary{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--field);font-size:14px;}
+  .summary .line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);}
+  .summary .line:last-child{border-bottom:none;}
+  .summary .tot{font-weight:800;font-family:var(--font-display);color:var(--ink);font-size:16px;padding-top:10px;}
+  .summary .tot span:last-child{color:var(--gold);}
 
-  @media (max-width:860px){
-    .product{grid-template-columns:1fr;gap:30px;}
-    .media{position:static;}
+  /* overlay */
+  .overlay{position:fixed;inset:0;background:rgba(5,8,14,0.78);display:none;align-items:center;justify-content:center;z-index:300;}
+  .overlay.show{display:flex;}
+  .overlay .box{background:var(--bg-2);border:1px solid var(--line);color:var(--ink);border-radius:16px;padding:30px 36px;text-align:center;max-width:340px;}
+  .spinner{width:38px;height:38px;border:4px solid rgba(255,255,255,0.15);border-top-color:var(--gold);border-radius:50%;margin:0 auto 14px;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .err{color:#ff7a7a;font-size:13px;margin-top:10px;}
+
+  footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--muted);font-size:13px;}
+  footer .disc{max-width:760px;margin:10px auto 0;font-size:11.5px;line-height:1.6;}
+
+  @media (max-width:760px){
     .nav-links{display:none;}
+    .choices{grid-template-columns:1fr;}
     .two{grid-template-columns:1fr;}
+    .panel{padding:22px;}
   }
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $50 · Buy 2 Get 1 Free — code BUY2GET1 ★</div>
+  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 Free — code BUY2GET1 ★</div>
 
   <header class="site">
     <div class="wrap nav">
       <a href="theme-preview-light.html" class="logo">
         <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
-          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#0c1322" stroke-width="4"/>
-          <rect x="11" y="11" width="36" height="11" rx="3" fill="#b8923a"/>
-          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#0c1322" stroke-width="4" stroke-linejoin="round"/>
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#e8ecf3" stroke-width="4" stroke-linejoin="round"/>
         </svg>
         <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
       </a>
@@ -145,207 +160,360 @@
         <a href="about.html">About</a>
         <a href="faq.html">FAQ</a>
       </nav>
-      <a href="#" class="cart" id="cartLink">Cart (0)</a>
+      <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" class="ig">Instagram</a>
     </div>
   </header>
 
   <div class="wrap">
-    <div class="crumb"><a href="theme-preview-light.html#shop" style="color:inherit;">Shop</a> / <b id="crumbName">Custom Graded Card Slab</b></div>
+    <!-- progress -->
+    <div class="steps-bar">
+      <div class="pill active" id="pill1"><span class="n">1</span> Choose</div>
+      <div class="pill" id="pill2"><span class="n">2</span> Design</div>
+      <div class="pill" id="pill3"><span class="n">3</span> Review &amp; Pay</div>
+    </div>
 
-    <div class="product">
-      <!-- LEFT: live slab preview -->
-      <div class="media">
-        <div class="slab">
-          <div class="slab-label">
-            <div>
-              <div class="brand">CARD VAULT CUSTOMS</div>
-              <div class="sub" id="lblName">CUSTOM SERIES · 2026</div>
-            </div>
-            <div class="grade-badge"><b id="lblGrade">10</b><small id="lblGradeText">GEM MINT</small></div>
-          </div>
-          <div class="slab-window">
-            <div class="card-inner finish-holo border-classic" id="cardInner">
-              <div class="card-photo" id="cardPhoto">
-                <span class="card-ph">Upload a photo to<br>preview your card</span>
-              </div>
+    <!-- STEP 1: CHOOSE -->
+    <section class="panel" id="step1">
+      <h2>Choose Your Cards</h2>
+      <div class="sub">Pick how many of each you'd like, then add any extras. You'll design each card next.</div>
+
+      <div class="choices">
+        <div class="choice has" data-product="slab" data-price="49.99">
+          <img src="images/slab-girls.png" alt="Custom graded card slab" />
+          <div class="ttl">Custom Graded Card Slab</div>
+          <div class="pr">$49.99</div>
+          <div class="desc">Your custom card sealed in a premium display slab with a personalized grade label.</div>
+          <div class="qtyrow">
+            <span class="lbl">Quantity</span>
+            <div class="stepper" data-product="slab">
+              <button type="button" data-d="-1" aria-label="decrease">−</button>
+              <div class="q" id="qty-slab">1</div>
+              <button type="button" data-d="1" aria-label="increase">+</button>
             </div>
           </div>
         </div>
-        <div class="thumbs">
-          <div class="active"></div><div></div><div></div><div></div>
+        <div class="choice" data-product="raw" data-price="34.99">
+          <img src="images/card-raw-holo.png" alt="Custom raw card" />
+          <div class="ttl">Custom Card (Raw)</div>
+          <div class="pr">$34.99</div>
+          <div class="desc">Your custom-designed card on premium stock — no slab. Ready to gift or sleeve.</div>
+          <div class="qtyrow">
+            <span class="lbl">Quantity</span>
+            <div class="stepper" data-product="raw">
+              <button type="button" data-d="-1" aria-label="decrease">−</button>
+              <div class="q" id="qty-raw">0</div>
+              <button type="button" data-d="1" aria-label="increase">+</button>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- RIGHT: design form -->
-      <div class="pinfo">
-        <span class="tag" id="pTag">Best Seller</span>
-        <h1 id="pTitle">Design Your Custom Graded Slab</h1>
-        <div class="price" id="pPrice">$59.00 CAD <s>$85.00</s></div>
-        <p class="ship-note">Free proof before we print · ships within 48h of approval</p>
-
-        <form class="form" onsubmit="return false;">
-          <!-- Format: Raw or Slab -->
-          <div class="field">
-            <label>Choose your format <span class="req">*</span></label>
-            <div class="seg" id="formatSeg">
-              <button type="button" data-format="slab" class="active">Graded Slab <span class="sp">Sealed in a display case · $59</span></button>
-              <button type="button" data-format="raw">Raw Card <span class="sp">Just the custom card · $27</span></button>
-            </div>
-          </div>
-
-          <!-- Photo upload -->
-          <div class="field">
-            <label>Upload your photo(s) <span class="req">*</span> <span class="hint">JPG, PNG or HEIC — up to 20MB</span></label>
-            <label class="upload" for="photo">
-              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="1.8"><path d="M12 16V4m0 0L8 8m4-4l4 4" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2" stroke-linecap="round"/></svg>
-              <div><b>Click to upload</b> or drag &amp; drop</div>
-              <div style="font-size:12px;margin-top:4px;">The clearer your photo, the better your card</div>
-              <input id="photo" type="file" accept="image/*" multiple hidden />
-            </label>
-          </div>
-
-          <!-- Broad creative description -->
-          <div class="field">
-            <label>Describe your dream card <span class="hint">go wild — this is where the magic happens</span></label>
-            <textarea placeholder="Tell us your vision: the character or person, the pose or scene, background, colors, mood, any text/names/dates, and anything that makes it special. The more detail you give us, the more creative we can get. No idea is too big!"></textarea>
-          </div>
-
-          <!-- Card name -->
-          <div class="field">
-            <label>Card name / text on slab <span class="hint">e.g. a name, nickname, or date</span></label>
-            <input id="nameInput" type="text" placeholder="e.g. ASH KETCHUM · EST. 2026" />
-          </div>
-
-          <!-- Style + Grade -->
-          <div class="two" id="row2">
-            <div class="field">
-              <label>Card style <span class="req">*</span></label>
-              <select>
-                <option>Pokémon</option>
-                <option>One Piece</option>
-                <option>Surprise me / Other</option>
-              </select>
-            </div>
-            <div class="field" id="gradeField">
-              <label>Slab grade to display <span class="hint">cosmetic, 1–10</span></label>
-              <select id="gradeSelect">
-                <option>10 — Gem Mint</option>
-                <option>9</option><option>8</option><option>7</option><option>6</option>
-                <option>5</option><option>4</option><option>3</option><option>2</option><option>1</option>
-              </select>
-            </div>
-          </div>
-
-          <!-- Proof method + contact -->
-          <div class="field">
-            <label>How should we send your proof? <span class="req">*</span></label>
-            <select id="proof" onchange="document.getElementById('proofContact').placeholder = this.value==='Email' ? 'you@email.com' : '(555) 123-4567'">
-              <option value="Text">Text message</option>
-              <option value="Email">Email</option>
-            </select>
-          </div>
-          <div class="field">
-            <label>Proof contact <span class="req">*</span></label>
-            <input id="proofContact" type="text" placeholder="(555) 123-4567" />
-          </div>
-
-          <!-- Qty + add -->
-          <div class="buybar">
-            <div class="qty">
-              <button type="button" onclick="var q=document.getElementById('q');q.value=Math.max(1,(+q.value||1)-1)">−</button>
-              <input id="q" type="text" value="1" inputmode="numeric" />
-              <button type="button" onclick="var q=document.getElementById('q');q.value=(+q.value||1)+1">+</button>
-            </div>
-            <button class="add" type="submit" id="addBtn">Add to Cart — $59.00</button>
-          </div>
-
-          <div class="reassure">
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Free design proof before printing</span>
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Unlimited revisions until you love it</span>
-            <span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#b8923a" stroke-width="2"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg> Ships in 48h after approval</span>
-          </div>
-        </form>
+      <div class="addons">
+        <h3>Add extras (optional)</h3>
+        <label class="addon" data-addon="Display stand" data-price="5">
+          <input type="checkbox" />
+          <span class="ai"><b>Display stand</b><span>Show off your slab on a clear acrylic stand</span></span>
+          <span class="ap">+$5</span>
+        </label>
+        <label class="addon" data-addon="Rush turnaround (48h)" data-price="15">
+          <input type="checkbox" />
+          <span class="ai"><b>Rush turnaround</b><span>Bump your order to the front — proof within 24h</span></span>
+          <span class="ap">+$15</span>
+        </label>
+        <label class="addon" data-addon="Gift wrapping" data-price="5">
+          <input type="checkbox" />
+          <span class="ai"><b>Gift wrapping</b><span>Wrapped &amp; ready to gift with a note card</span></span>
+          <span class="ap">+$5</span>
+        </label>
       </div>
+
+      <div class="totbar">Subtotal: <b id="tot1">$49.99</b></div>
+      <div class="row-btns">
+        <span></span>
+        <button class="btn btn-gold" id="to2">Next: Design →</button>
+      </div>
+    </section>
+
+    <!-- STEP 2: DESIGN -->
+    <section class="panel hidden" id="step2">
+      <h2>Design Your Cards</h2>
+      <div class="sub">Upload a photo and tell us your vision for each card — we'll send a free proof before we print a thing.</div>
+
+      <!-- per-card blocks injected here -->
+      <div id="cards"></div>
+
+      <div class="ordercontact two">
+        <div class="field">
+          <label>How should we send your proof? <span class="req">*</span></label>
+          <select id="proofMethod">
+            <option>Text message</option>
+            <option>Email</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Proof contact <span class="req">*</span> <span class="hint">phone or email</span></label>
+          <input id="proofContact" type="text" placeholder="(555) 123-4567 or you@email.com" />
+        </div>
+      </div>
+
+      <div class="row-btns">
+        <button class="btn btn-ghost" id="back1">← Back</button>
+        <button class="btn btn-gold" id="to3">Next: Review →</button>
+      </div>
+    </section>
+
+    <!-- STEP 3: REVIEW & PAY -->
+    <section class="panel hidden" id="step3">
+      <h2>Review &amp; Pay</h2>
+      <div class="sub">Confirm your order. You'll pay securely via Stripe, then we'll send your free proof.</div>
+
+      <div class="summary" id="summary"></div>
+
+      <div class="row-btns">
+        <button class="btn btn-ghost" id="back2">← Back</button>
+        <button class="btn btn-gold" id="pay">Pay securely →</button>
+      </div>
+      <p style="color:var(--muted);font-size:12px;margin-top:14px;text-align:center;">🔒 Secure checkout by Stripe · Free design proof before we print</p>
+    </section>
+  </div>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 Card Vault Customs · <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" style="color:var(--gold);">@cardvaultcustoms</a></div>
+      <div class="disc">Custom fan-made novelty items. Not authentic PSA/BGS/CGC graded cards and not affiliated with Pokémon, The Pokémon Company, Bandai, or One Piece.</div>
+    </div>
+  </footer>
+
+  <!-- submit overlay -->
+  <div class="overlay" id="overlay">
+    <div class="box">
+      <div class="spinner"></div>
+      <div id="ovText">Saving your order &amp; preparing checkout…</div>
+      <div class="err" id="ovErr"></div>
     </div>
   </div>
 
-  <div class="toast" id="toast">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d8b25a" stroke-width="2.4"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span id="toastMsg">Added to cart!</span>
-  </div>
-
   <script>
+    /* ============================================================
+       CONFIG — paste your deployed Apps Script Web App URL here
+       ============================================================ */
+    var APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx9B6yhtZoRbS_UzsG_swxRCB1FVlmJQ3-9Q2JLlrzzXO4Emyaqe6fEXtP2HwdsoYnv/exec";
+
     var $ = function(id){ return document.getElementById(id); };
-    var cardInner = $('cardInner');
 
-    // Card name -> slab label
-    $('nameInput').addEventListener('input', function(e){
-      var v = e.target.value.trim();
-      $('lblName').textContent = v ? v.toUpperCase() : 'CUSTOM SERIES · 2026';
-    });
-
-    // Grade -> badge
-    $('gradeSelect').addEventListener('change', function(e){
-      var num = parseInt(e.target.value, 10);
-      $('lblGrade').textContent = num;
-      $('lblGradeText').textContent = num === 10 ? 'GEM MINT' : (num >= 8 ? 'MINT' : 'GRADED');
-    });
-
-    // Format: Raw vs Slab
-    var slab = document.querySelector('.slab');
-    var formatData = {
-      slab: { title:'Design Your Custom Graded Slab', crumb:'Custom Graded Card Slab', tag:'Best Seller', price:'$59.00 CAD <s>$85.00</s>', add:'Add to Cart — $59.00' },
-      raw:  { title:'Design Your Custom Card (Raw)',  crumb:'Custom Card (Raw)',       tag:'Most Affordable', price:'$27.00 CAD',            add:'Add to Cart — $27.00' }
+    var PRODUCTS = {
+      slab: { name:'Custom Graded Card Slab', price:49.99, type:'slab' },
+      raw:  { name:'Custom Card (Raw)',       price:34.99, type:'raw'  }
     };
-    document.querySelectorAll('#formatSeg button').forEach(function(btn){
-      btn.addEventListener('click', function(){
-        var fmt = btn.getAttribute('data-format');
-        document.querySelectorAll('#formatSeg button').forEach(function(b){ b.classList.remove('active'); });
-        btn.classList.add('active');
-        var d = formatData[fmt];
-        $('pTitle').textContent = d.title;
-        $('crumbName').textContent = d.crumb;
-        $('pTag').textContent = d.tag;
-        $('pPrice').innerHTML = d.price;
-        $('addBtn').textContent = d.add;
-        if (fmt === 'raw') {
-          slab.classList.add('is-raw');
-          $('gradeField').style.display = 'none';
-          $('row2').classList.add('one-col');
-        } else {
-          slab.classList.remove('is-raw');
-          $('gradeField').style.display = '';
-          $('row2').classList.remove('one-col');
-        }
+    var qty = { slab:1, raw:0 };
+    var addons = [];
+    var cards = [];          // one entry per card unit
+    var orderTotal = 0;
+
+    function money(n){ return '$' + n.toFixed(2); }
+
+    /* ---------- Step 1: quantities + add-ons ---------- */
+    function recalc(){
+      var t = qty.slab*PRODUCTS.slab.price + qty.raw*PRODUCTS.raw.price;
+      addons.forEach(function(a){ t += a.price; });
+      orderTotal = t;
+      $('tot1').textContent = money(t);
+      document.querySelectorAll('.choice').forEach(function(c){
+        c.classList.toggle('has', qty[c.getAttribute('data-product')] > 0);
+      });
+      $('to2').disabled = (qty.slab + qty.raw === 0);
+    }
+    document.querySelectorAll('.stepper').forEach(function(st){
+      var p = st.getAttribute('data-product');
+      st.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){
+          var d = parseInt(b.getAttribute('data-d'),10);
+          qty[p] = Math.max(0, Math.min(20, qty[p] + d));
+          $('qty-'+p).textContent = qty[p];
+          recalc();
+        });
+      });
+    });
+    document.querySelectorAll('.addon').forEach(function(a){
+      a.addEventListener('change', function(){
+        var box = a.querySelector('input');
+        var name = a.getAttribute('data-addon');
+        var price = parseFloat(a.getAttribute('data-price'));
+        a.classList.toggle('sel', box.checked);
+        if(box.checked){ addons.push({name:name, price:price}); }
+        else { addons = addons.filter(function(x){ return x.name !== name; }); }
+        recalc();
       });
     });
 
-    // Add to cart (prototype) -> update count + confirmation toast
-    var cartCount = 0, toastTimer;
-    $('addBtn').addEventListener('click', function(){
-      var q = Math.max(1, parseInt($('q').value, 10) || 1);
-      cartCount += q;
-      $('cartLink').textContent = 'Cart (' + cartCount + ')';
-      var item = document.querySelector('#formatSeg button.active').getAttribute('data-format') === 'raw' ? 'Raw card' : 'Graded slab';
-      $('toastMsg').textContent = 'Added ' + q + ' × ' + item + ' to cart!';
-      var t = $('toast');
-      t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 2200);
+    /* ---------- photo compression ---------- */
+    function compress(file){
+      return new Promise(function(resolve){
+        var reader = new FileReader();
+        reader.onload = function(e){
+          var img = new Image();
+          img.onload = function(){
+            var max = 1600, w = img.width, h = img.height;
+            if(w > max || h > max){
+              if(w > h){ h = Math.round(h*max/w); w = max; }
+              else { w = Math.round(w*max/h); h = max; }
+            }
+            var canvas = document.createElement('canvas');
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+            resolve({ name: file.name.replace(/\.[^.]+$/, '') + '.jpg', dataUrl: canvas.toDataURL('image/jpeg', 0.85) });
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    /* ---------- build + render per-card design blocks ---------- */
+    var STYLE_OPTS = ['Pokémon','One Piece','Surprise me / Other'];
+    var OCC_OPTS = ['Birthday','Anniversary','Graduation','Wedding / Engagement',"Father's Day","Mother's Day","Valentine's Day",'New Baby','Memorial / Tribute','Just Because','Other'];
+    function opts(list, sel){ return list.map(function(o){ return '<option'+(o===sel?' selected':'')+'>'+o+'</option>'; }).join(''); }
+    function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
+
+    function buildCards(){
+      var needed = [];
+      var i;
+      for(i=0;i<qty.slab;i++) needed.push('slab');
+      for(i=0;i<qty.raw;i++)  needed.push('raw');
+      var pools = { slab:[], raw:[] };
+      cards.forEach(function(c){ pools[c.type].push(c); });   // preserve prior entries
+      cards = needed.map(function(type){
+        if(pools[type].length){ return pools[type].shift(); }
+        return { type:type, productName:PRODUCTS[type].name, price:PRODUCTS[type].price,
+                 photos:[], style:'Pokémon', occasion:'Birthday', cardName:'', vision:'' };
+      });
+    }
+    function renderCards(){
+      var typeLabel = { slab:'Graded Slab', raw:'Raw Card' };
+      $('cards').innerHTML = cards.map(function(c, i){
+        return ''+
+        '<div class="cardblock">'+
+          '<div class="cardhead"><span class="cb-n">Card '+(i+1)+'</span><span class="cb-type">'+typeLabel[c.type]+'</span></div>'+
+          '<div class="field">'+
+            '<label>Upload photo(s) <span class="req">*</span> <span class="hint">JPG/PNG/HEIC — auto-optimized</span></label>'+
+            '<label class="upload" for="photo_'+i+'"><div><b>Click to upload</b> or drag &amp; drop</div><div style="font-size:12px;margin-top:4px;">The clearer your photo, the better your card</div><input id="photo_'+i+'" type="file" accept="image/*" multiple hidden></label>'+
+            '<div class="previews" id="previews_'+i+'"></div>'+
+          '</div>'+
+          '<div class="two">'+
+            '<div class="field"><label>Card style <span class="req">*</span></label><select id="style_'+i+'">'+opts(STYLE_OPTS,c.style)+'</select></div>'+
+            '<div class="field"><label>Occasion <span class="req">*</span></label><select id="occasion_'+i+'">'+opts(OCC_OPTS,c.occasion)+'</select></div>'+
+          '</div>'+
+          '<div class="field"><label>Card name / text on card <span class="hint">a name, nickname, or date</span></label><input id="cardName_'+i+'" type="text" value="'+esc(c.cardName)+'" placeholder="e.g. ASH KETCHUM · EST. 2026"></div>'+
+          '<div class="field"><label>Anything we should know? <span class="hint">optional — keep it short</span></label><textarea id="vision_'+i+'" placeholder="Optional: a name, date, or a few words on the vibe. Leave blank and we\'ll work our magic. ✨">'+esc(c.vision)+'</textarea></div>'+
+        '</div>';
+      }).join('');
+
+      cards.forEach(function(c, i){
+        $('photo_'+i).addEventListener('change', function(e){
+          var files = Array.prototype.slice.call(e.target.files||[]);
+          Promise.all(files.map(compress)).then(function(res){ c.photos = c.photos.concat(res); renderPreviews(i); });
+          e.target.value = '';
+        });
+        ['style','occasion','cardName','vision'].forEach(function(f){
+          var el = $(f+'_'+i);
+          el.addEventListener('input', function(){ c[f] = el.value; });
+          el.addEventListener('change', function(){ c[f] = el.value; });
+        });
+        renderPreviews(i);
+      });
+    }
+    function renderPreviews(i){
+      var c = cards[i], box = $('previews_'+i);
+      box.innerHTML = c.photos.map(function(p, j){
+        return '<div class="pv"><img src="'+p.dataUrl+'"><button type="button" data-j="'+j+'">×</button></div>';
+      }).join('');
+      box.querySelectorAll('button').forEach(function(b){
+        b.addEventListener('click', function(){ c.photos.splice(parseInt(b.getAttribute('data-j'),10),1); renderPreviews(i); });
+      });
+    }
+
+    /* ---------- navigation ---------- */
+    function showStep(n){
+      [1,2,3].forEach(function(i){
+        $('step'+i).classList.toggle('hidden', i !== n);
+        var pill = $('pill'+i);
+        pill.classList.toggle('active', i === n);
+        pill.classList.toggle('done', i < n);
+      });
+      window.scrollTo(0,0);
+    }
+    $('to2').addEventListener('click', function(){
+      if(qty.slab + qty.raw === 0){ alert('Please choose at least one card.'); return; }
+      buildCards(); renderCards(); showStep(2);
+    });
+    $('back1').addEventListener('click', function(){ showStep(1); });
+    $('to3').addEventListener('click', function(){
+      for(var i=0;i<cards.length;i++){
+        var c = cards[i];
+        c.style=$('style_'+i).value; c.occasion=$('occasion_'+i).value;
+        c.cardName=$('cardName_'+i).value.trim(); c.vision=$('vision_'+i).value.trim();
+        if(c.photos.length===0){ alert('Please upload at least one photo for Card '+(i+1)+'.'); return; }
+      }
+      if(!$('proofContact').value.trim()){ alert('Please add a phone or email so we can send your proof.'); return; }
+      buildSummary(); showStep(3);
+    });
+    $('back2').addEventListener('click', function(){ showStep(2); });
+
+    /* ---------- summary + payload ---------- */
+    function buildLineItems(){
+      var li = [];
+      if(qty.slab>0) li.push({ name:PRODUCTS.slab.name, price:PRODUCTS.slab.price, qty:qty.slab });
+      if(qty.raw>0)  li.push({ name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price,  qty:qty.raw  });
+      addons.forEach(function(a){ li.push({ name:a.name, price:a.price, qty:1 }); });
+      return li;
+    }
+    function summaryText(){
+      var parts = [];
+      if(qty.slab>0) parts.push(qty.slab+'× Slab');
+      if(qty.raw>0)  parts.push(qty.raw+'× Raw');
+      addons.forEach(function(a){ parts.push(a.name); });
+      return parts.join(', ');
+    }
+    function gatherDetails(){
+      return {
+        currency:'CAD', total:orderTotal, cardCount:cards.length,
+        summary:summaryText(), lineItems:buildLineItems(), addons:addons,
+        proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
+        cards:cards.map(function(c){
+          return { type:c.type, productName:c.productName, price:c.price,
+                   style:c.style, occasion:c.occasion, cardName:c.cardName, vision:c.vision, photos:c.photos };
+        })
+      };
+    }
+    function buildSummary(){
+      var html = '';
+      if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
+      if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
+      addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
+      cards.forEach(function(c, i){
+        html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+c.style+' · '+c.occasion+' · '+c.photos.length+' photo(s)</span></div>';
+      });
+      html += '<div class="line"><span>Proof via</span><span>'+$('proofMethod').value+' · '+$('proofContact').value.trim()+'</span></div>';
+      html += '<div class="line tot"><span>Total</span><span>'+money(orderTotal)+' CAD</span></div>';
+      $('summary').innerHTML = html;
+    }
+
+    /* ---------- submit ---------- */
+    $('pay').addEventListener('click', function(){
+      if(APPS_SCRIPT_URL.indexOf('PASTE_') === 0){ alert('Setup not finished: the Apps Script URL hasn\'t been added yet.'); return; }
+      var d = gatherDetails();
+      $('overlay').classList.add('show');
+      $('ovErr').textContent = '';
+      fetch(APPS_SCRIPT_URL, { method:'POST', body:JSON.stringify(d) })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+          if(res && res.checkoutUrl){ window.location.href = res.checkoutUrl; }
+          else { throw new Error(res && res.error ? res.error : 'Unexpected response'); }
+        })
+        .catch(function(err){ $('ovErr').textContent = 'Something went wrong: ' + err.message + '. Please try again or DM us on Instagram.'; });
     });
 
-    // Photo -> live image in the card
-    $('photo').addEventListener('change', function(e){
-      var f = e.target.files && e.target.files[0];
-      if (!f) return;
-      var reader = new FileReader();
-      reader.onload = function(ev){
-        var cp = $('cardPhoto');
-        cp.style.backgroundImage = 'url(' + ev.target.result + ')';
-        cp.classList.add('has-photo');
-      };
-      reader.readAsDataURL(f);
-    });
+    recalc();
   </script>
 </body>
 </html>

@@ -1,3 +1,9 @@
-.DS_Store
-*.log
-Thumbs.db
+# Backend code — kept out of the public site repo (contains owner emails + sheet ID).
+# This runs in Google Apps Script, not on the website.
+apps-script/
+
+# Local dev/image scripts — not part of the website
+*.py
+
+# Old Jotform version of the order page (superseded)
+design-page-jotform-backup.html
