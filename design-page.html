@@ -605,7 +605,8 @@
       if(STRIPE_PUBLISHABLE_KEY.indexOf('pk_') !== 0){ onError('Setup not finished: the Stripe publishable key hasn\'t been added yet.'); return; }
       if(checkout){ try{ checkout.destroy(); }catch(e){} checkout = null; }
       if(!stripe){ stripe = Stripe(STRIPE_PUBLISHABLE_KEY); }
-      stripe.initEmbeddedCheckout({ clientSecret: clientSecret }).then(function(co){
+      // Stripe 2026-03 renamed initEmbeddedCheckout -> createEmbeddedCheckoutPage.
+      stripe.createEmbeddedCheckoutPage({ fetchClientSecret: function(){ return Promise.resolve(clientSecret); } }).then(function(co){
         checkout = co;
         $('comodal').classList.add('show');
         co.mount('#checkout');
