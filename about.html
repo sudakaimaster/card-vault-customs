@@ -4,29 +4,11 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Card Vault Customs — About Us</title>
+<link rel="stylesheet" href="styles.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
-  :root{
-    --bg:#0a0e17; --bg-2:#131a28; --ink:#eef1f7; --muted:#9aa6bd;
-    --gold:#d8b25a; --gold-soft:#e8c97a; --navy:#0c1322; --line:rgba(255,255,255,0.12); --radius:14px;
-    --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.10), transparent 60%),var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3{font-family:var(--font-display);}
-  a{color:inherit;text-decoration:none;}
-  .wrap{max-width:980px;margin:0 auto;padding:0 24px;}
+  body{line-height:1.65;}
+  .wrap{max-width:980px;}
   .narrow{max-width:720px;margin:0 auto;padding:0 24px;}
-
-  .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
-  header.site{position:sticky;top:0;z-index:50;background:rgba(10,14,23,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-  .nav{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px;}
-  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
-  .logo .wm i{color:var(--gold);font-style:normal;}
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
-  .nav-links a:hover{color:var(--ink);}
-  .nav-links a.active{color:var(--ink);font-weight:600;}
-  .cart{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
 
   /* hero */
   .hero{text-align:center;padding:60px 0 18px;}
@@ -64,15 +46,15 @@
   .btn:hover{background:var(--gold-soft);}
   .btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line);margin-left:10px;}
 
-  @media (max-width:760px){ .nav-links{display:none;} .hero h1{font-size:32px;} .story{grid-template-columns:1fr;gap:24px;} .vgrid{grid-template-columns:1fr;} }
+  @media (max-width:760px){ .hero h1{font-size:32px;} .story{grid-template-columns:1fr;gap:24px;} .vgrid{grid-template-columns:1fr;} }
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 — 50% Off ★</div>
+  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 2 Get 1 Free ★</div>
 
   <header class="site">
     <div class="nav">
-      <a href="theme-preview-light.html" class="logo">
+      <a href="index.html" class="logo">
         <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
           <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
           <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
@@ -82,12 +64,23 @@
       </a>
       <nav class="nav-links">
         <a href="design-page.html">Shop</a>
-        <a href="theme-preview-light.html#how">How It Works</a>
+        <a href="index.html#how">How It Works</a>
         <a href="about.html" class="active">About</a>
         <a href="faq.html">FAQ</a>
       </nav>
-      <a href="design-page.html" class="cart">Cart (0)</a>
+      <div class="nav-right">
+        <a href="design-page.html" class="cart">Order Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="design-page.html">Shop</a>
+      <a href="index.html#how">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
   </header>
 
   <!-- HERO -->
@@ -150,5 +143,7 @@
     <a href="https://www.instagram.com/cardvaultcustoms" class="btn ghost">Follow @cardvaultcustoms</a>
     <a href="mailto:cardvaultcustoms@gmail.com" class="btn ghost">Email us</a>
   </div>
+
+  <script src="site.js"></script>
 </body>
 </html>

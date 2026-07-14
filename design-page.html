@@ -4,27 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Card Vault Customs — Design Your Card</title>
+<link rel="stylesheet" href="styles.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
-  :root{
-    --bg:#0a0e17; --bg-2:#131a28; --ink:#eef1f7; --muted:#9aa6bd;
-    --gold:#d8b25a; --gold-soft:#e8c97a; --navy:#0c1322;
-    --line:rgba(255,255,255,0.12); --field:#0e1420; --radius:14px;
-    --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.10), transparent 60%),var(--bg);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3{font-family:var(--font-display);}
-  a{color:inherit;text-decoration:none;}
-  .wrap{max-width:1000px;margin:0 auto;padding:0 24px;}
+  .wrap{max-width:1000px;}
 
-  .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
-  header.site{position:sticky;top:0;z-index:50;background:rgba(10,14,23,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:70px;}
-  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
-  .logo .wm i{color:var(--gold);font-style:normal;}
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
-  .nav-links a:hover{color:var(--ink);}
   .ig{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid var(--line);border-radius:999px;color:var(--ink);transition:border-color .15s ease,color .15s ease;}
   .ig:hover{border-color:var(--gold);color:var(--gold);}
   .ig svg{display:block;}
@@ -44,23 +27,24 @@
 
   /* product choice cards */
   .choices{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-  .choice{border:1.5px solid rgba(12,19,34,0.10);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;background:#f5eee0;color:#1d2740;}
+  .choice{border:1.5px solid var(--line);border-radius:14px;padding:16px;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease;background:var(--navy);color:var(--ink);}
   .choice:hover{transform:translateY(-2px);border-color:var(--gold);}
   .choice.sel{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
   .choice img{width:100%;height:190px;object-fit:contain;border-radius:10px;background:#0a1020;margin-bottom:12px;}
-  .choice .ttl{font-family:var(--font-display);font-weight:700;font-size:16px;color:#1d2740;}
-  .choice .pr{color:#9c7416;font-weight:700;margin-top:2px;}
-  .choice .pr s{color:rgba(29,39,64,0.5);font-weight:400;font-size:13px;margin-left:6px;}
-  .choice .desc{color:rgba(29,39,64,0.72);font-size:13px;margin-top:6px;}
+  .choice .ttl{font-family:var(--font-display);font-weight:700;font-size:16px;color:var(--ink);}
+  .choice .pr{color:var(--gold);font-weight:700;margin-top:2px;}
+  .choice .pr s{color:var(--muted);font-weight:400;font-size:13px;margin-left:6px;}
+  .choice .pr .cur{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;}
+  .choice .desc{color:var(--muted);font-size:13px;margin-top:6px;}
   .choice.has{border-color:var(--gold);box-shadow:0 0 0 1px var(--gold) inset;}
-  .qtyrow{display:flex;align-items:center;justify-content:space-between;margin-top:14px;border-top:1px solid rgba(12,19,34,0.12);padding-top:14px;}
-  .qtyrow .lbl{font-size:12.5px;color:rgba(29,39,64,0.6);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
+  .qtyrow{display:flex;align-items:center;justify-content:space-between;margin-top:14px;border-top:1px solid var(--line);padding-top:14px;}
+  .qtyrow .lbl{font-size:12.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.5px;}
   .stepper{display:flex;align-items:center;}
-  .stepper button{width:34px;height:34px;border:1px solid rgba(12,19,34,0.25);background:#fff;color:#1d2740;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .stepper button{width:34px;height:34px;border:1px solid var(--line);background:var(--field);color:var(--ink);font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;}
   .stepper button:first-child{border-radius:9px 0 0 9px;}
   .stepper button:last-child{border-radius:0 9px 9px 0;}
-  .stepper button:hover{border-color:var(--gold);color:#9c7416;}
-  .stepper .q{min-width:44px;height:34px;border-top:1px solid rgba(12,19,34,0.25);border-bottom:1px solid rgba(12,19,34,0.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display);font-size:16px;color:#1d2740;background:#fff;}
+  .stepper button:hover{border-color:var(--gold);color:var(--gold);}
+  .stepper .q{min-width:44px;height:34px;border-top:1px solid var(--line);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;font-family:var(--font-display);font-size:16px;color:var(--ink);background:var(--field);}
 
   /* per-card design blocks */
   .cardblock{border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:18px;background:rgba(255,255,255,0.02);}
@@ -147,7 +131,6 @@
   footer .disc{max-width:760px;margin:10px auto 0;font-size:11.5px;line-height:1.6;}
 
   @media (max-width:760px){
-    .nav-links{display:none;}
     .choices{grid-template-columns:1fr;}
     .two{grid-template-columns:1fr;}
     .panel{padding:22px;}
@@ -155,11 +138,11 @@
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 — 50% Off ★</div>
+  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 2 Get 1 Free ★</div>
 
   <header class="site">
     <div class="wrap nav">
-      <a href="theme-preview-light.html" class="logo">
+      <a href="index.html" class="logo">
         <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
           <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
           <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
@@ -168,19 +151,30 @@
         <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
       </a>
       <nav class="nav-links">
-        <a href="theme-preview-light.html#shop">Shop</a>
-        <a href="theme-preview-light.html#how">How It Works</a>
+        <a href="index.html#shop">Shop</a>
+        <a href="index.html#how">How It Works</a>
         <a href="about.html">About</a>
         <a href="faq.html">FAQ</a>
       </nav>
-      <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" class="ig" aria-label="Instagram">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <rect x="2" y="2" width="20" height="20" rx="5.5"/>
-          <circle cx="12" cy="12" r="4.2"/>
-          <circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/>
-        </svg>
-      </a>
+      <div class="nav-right">
+        <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" class="ig" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="2" y="2" width="20" height="20" rx="5.5"/>
+            <circle cx="12" cy="12" r="4.2"/>
+            <circle cx="17.6" cy="6.4" r="1.1" fill="currentColor" stroke="none"/>
+          </svg>
+        </a>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="index.html#shop">Shop</a>
+      <a href="index.html#how">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
   </header>
 
   <div class="wrap">
@@ -198,9 +192,9 @@
 
       <div class="choices">
         <div class="choice has" data-product="slab" data-price="49.99">
-          <img src="images/slab-girls.png" alt="Custom graded card slab" />
+          <img src="images/slab-girls.webp" width="640" height="854" alt="Custom graded card slab" />
           <div class="ttl">Custom Graded Card Slab</div>
-          <div class="pr">$49.99</div>
+          <div class="pr">$49.99 <span class="cur">CAD</span></div>
           <div class="desc">Your custom card sealed in a premium display slab with a personalized grade label.</div>
           <div class="qtyrow">
             <span class="lbl">Quantity</span>
@@ -212,9 +206,9 @@
           </div>
         </div>
         <div class="choice" data-product="raw" data-price="34.99">
-          <img src="images/card-raw-holo.png" alt="Custom raw card" />
+          <img src="images/card-raw-holo.webp" width="640" height="915" alt="Custom raw card" />
           <div class="ttl">Custom Card (Raw)</div>
-          <div class="pr">$34.99</div>
+          <div class="pr">$34.99 <span class="cur">CAD</span></div>
           <div class="desc">Your custom-designed card on premium stock — no slab. Ready to gift or sleeve.</div>
           <div class="qtyrow">
             <span class="lbl">Quantity</span>
@@ -246,7 +240,7 @@
         </label>
       </div>
 
-      <div class="totbar">Total: <b id="tot1">$49.99</b></div>
+      <div class="totbar">Total: <b id="tot1">$49.99</b> CAD</div>
       <div class="totnote" id="totnote"></div>
       <div class="row-btns">
         <span></span>
@@ -300,6 +294,7 @@
   <footer>
     <div class="wrap">
       <div>© 2026 Card Vault Customs · <a href="https://www.instagram.com/cardvaultcustoms" target="_blank" rel="noopener" style="color:var(--gold);">@cardvaultcustoms</a> · <a href="mailto:cardvaultcustoms@gmail.com" style="color:var(--gold);">cardvaultcustoms@gmail.com</a></div>
+      <div style="margin-top:8px;"><a href="policies.html#shipping" style="color:var(--gold);">Shipping</a> · <a href="policies.html#refunds" style="color:var(--gold);">Refunds</a> · <a href="policies.html#privacy" style="color:var(--gold);">Privacy</a> · <a href="policies.html#terms" style="color:var(--gold);">Terms</a></div>
       <div class="disc">Custom fan-made novelty items. Not authentic PSA/BGS/CGC graded cards and not affiliated with Pokémon, The Pokémon Company, Bandai, or One Piece.</div>
     </div>
   </footer>
@@ -324,6 +319,7 @@
     </div>
   </div>
 
+  <script src="site.js"></script>
   <script src="https://js.stripe.com/v3/"></script>
   <script>
     /* ============================================================
@@ -348,8 +344,8 @@
     /* ---------- pricing rules ---------- */
     var SHIP_FEE = 15.99;      // flat shipping under the free threshold
     var FREE_SHIP_MIN = 75;    // free shipping at/above this merchandise subtotal
-    var PROMO_EVERY = 3;       // Buy 2 Get 1: 1 in every 3 cards is discounted
-    var PROMO_OFF = 0.5;       // ...at 50% off (applied to the cheapest cards)
+    var PROMO_EVERY = 3;       // Buy 2 Get 1 Free: 1 in every 3 cards is free
+    var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
 
     function money(n){ return '$' + n.toFixed(2); }
     function r2(n){ return Math.round(n*100)/100; }
@@ -362,7 +358,7 @@
       for(i=0;i<qty.slab;i++) list.push({ type:'slab', name:PRODUCTS.slab.name, price:PRODUCTS.slab.price });
       for(i=0;i<qty.raw;i++)  list.push({ type:'raw',  name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price  });
 
-      // Buy 2 Get 1 — 50% off the cheapest 1 of every 3 cards.
+      // Buy 2 Get 1 Free — the cheapest 1 of every 3 cards is free.
       var byCheapest = list.map(function(_,idx){ return idx; })
         .sort(function(a,b){ return list[a].price - list[b].price; });
       var freeCount = Math.floor(list.length / PROMO_EVERY);
@@ -448,6 +444,8 @@
     /* ---------- build + render per-card design blocks ---------- */
     var STYLE_OPTS = ['Pokémon','One Piece','Surprise me / Other'];
     var OCC_OPTS = ['Birthday','Anniversary','Graduation','Wedding / Engagement',"Father's Day","Mother's Day","Valentine's Day",'New Baby','Memorial / Tribute','Just Because','Other'];
+    var FINISH_OPTS = ['Holographic','Foil','Matte','Glossy'];
+    var GRADE_OPTS = ['10 — Gem Mint','9 — Mint','8 — Near Mint','7 — Excellent','6 — Very Good','5 — Good','4','3','2','1'];
     function opts(list, sel){ return list.map(function(o){ return '<option'+(o===sel?' selected':'')+'>'+o+'</option>'; }).join(''); }
     function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
 
@@ -461,7 +459,7 @@
       cards = needed.map(function(type){
         if(pools[type].length){ return pools[type].shift(); }
         return { type:type, productName:PRODUCTS[type].name, price:PRODUCTS[type].price,
-                 photos:[], style:'Pokémon', occasion:'Birthday', cardName:'', vision:'' };
+                 photos:[], style:'Pokémon', occasion:'Birthday', finish:'Holographic', grade:'10 — Gem Mint', cardName:'', vision:'' };
       });
     }
     function renderCards(){
@@ -479,6 +477,12 @@
             '<div class="field"><label>Card style <span class="req">*</span></label><select id="style_'+i+'">'+opts(STYLE_OPTS,c.style)+'</select></div>'+
             '<div class="field"><label>Occasion <span class="req">*</span></label><select id="occasion_'+i+'">'+opts(OCC_OPTS,c.occasion)+'</select></div>'+
           '</div>'+
+          '<div class="two">'+
+            '<div class="field"><label>Card finish <span class="req">*</span></label><select id="finish_'+i+'">'+opts(FINISH_OPTS,c.finish)+'</select></div>'+
+            (c.type==='slab'
+              ? '<div class="field"><label>Display grade <span class="hint">cosmetic — you pick it</span></label><select id="grade_'+i+'">'+opts(GRADE_OPTS,c.grade)+'</select></div>'
+              : '')+
+          '</div>'+
           '<div class="field"><label>Card name / text on card <span class="hint">a name, nickname, or date</span></label><input id="cardName_'+i+'" type="text" value="'+esc(c.cardName)+'" placeholder="e.g. ASH KETCHUM · EST. 2026"></div>'+
           '<div class="field"><label>Anything we should know? <span class="hint">optional — keep it short</span></label><textarea id="vision_'+i+'" placeholder="Optional: a name, date, or a few words on the vibe. Leave blank and we\'ll work our magic. ✨">'+esc(c.vision)+'</textarea></div>'+
         '</div>';
@@ -490,8 +494,9 @@
           Promise.all(files.map(compress)).then(function(res){ c.photos = c.photos.concat(res); renderPreviews(i); });
           e.target.value = '';
         });
-        ['style','occasion','cardName','vision'].forEach(function(f){
+        ['style','occasion','finish','grade','cardName','vision'].forEach(function(f){
           var el = $(f+'_'+i);
+          if(!el) return;
           el.addEventListener('input', function(){ c[f] = el.value; });
           el.addEventListener('change', function(){ c[f] = el.value; });
         });
@@ -527,6 +532,8 @@
       for(var i=0;i<cards.length;i++){
         var c = cards[i];
         c.style=$('style_'+i).value; c.occasion=$('occasion_'+i).value;
+        c.finish=$('finish_'+i).value;
+        if($('grade_'+i)) c.grade=$('grade_'+i).value;
         c.cardName=$('cardName_'+i).value.trim(); c.vision=$('vision_'+i).value.trim();
         if(c.photos.length===0){ alert('Please upload at least one photo for Card '+(i+1)+'.'); return; }
       }
@@ -542,7 +549,7 @@
       var o = computeOrder();
       var groups = {};
       o.list.forEach(function(c){
-        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (50% off)' : '');
+        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (FREE)' : '');
         var key = label + '|' + c.charged;
         if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
         groups[key].qty++;
@@ -577,7 +584,9 @@
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
         cards:cards.map(function(c){
           return { type:c.type, productName:c.productName, price:c.price,
-                   style:c.style, occasion:c.occasion, cardName:c.cardName, vision:c.vision, photos:c.photos };
+                   style:c.style, occasion:c.occasion, finish:c.finish,
+                   grade:(c.type==='slab' ? c.grade : ''),
+                   cardName:c.cardName, vision:c.vision, photos:c.photos };
         })
       };
     }
@@ -587,10 +596,13 @@
       if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
       addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
-      if(o.discount>0) html += '<div class="line disc"><span>Buy 2 Get 1 — 50% off</span><span>−'+money(o.discount)+'</span></div>';
+      if(o.discount>0) html += '<div class="line disc"><span>Buy 2 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
       html += '<div class="line"><span>Shipping'+(o.shipping>0?'':' (over $75)')+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){
-        html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+c.style+' · '+c.occasion+' · '+c.photos.length+' photo(s)</span></div>';
+        var bits = [c.style, c.occasion, c.finish];
+        if(c.type==='slab') bits.push('Grade '+String(c.grade).split(' ')[0]);
+        bits.push(c.photos.length+' photo(s)');
+        html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+bits.join(' · ')+'</span></div>';
       });
       html += '<div class="line"><span>Proof via</span><span>'+$('proofMethod').value+' · '+$('proofContact').value.trim()+'</span></div>';
       html += '<div class="line tot"><span>Total</span><span>'+money(o.total)+' CAD</span></div>';

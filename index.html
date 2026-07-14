@@ -1,12 +1,329 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="refresh" content="0; url=theme-preview-light.html" />
-  <title>Card Vault Customs</title>
-  <link rel="canonical" href="theme-preview-light.html" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Card Vault Customs — Custom Graded Card Slabs From Your Photos</title>
+<link rel="stylesheet" href="styles.css" />
+<style>
+  /* ---------- Hero ---------- */
+  .hero { padding: 76px 0 64px; }
+  .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 48px; align-items: center; }
+  .eyebrow { color: var(--gold); font-weight: 700; font-size: 12.5px; letter-spacing: 2.5px; text-transform: uppercase; margin-bottom: 18px; }
+  .hero h1 { font-size: 52px; line-height: 1.05; font-weight: 800; margin-bottom: 20px; }
+  .hero p { color: var(--muted); font-size: 17px; max-width: 460px; margin-bottom: 30px; }
+  .btn {
+    display: inline-block; background: var(--gold); color: #1a1206;
+    font-weight: 700; font-size: 15px; padding: 14px 30px; border-radius: 999px;
+    transition: transform .15s ease, background .15s ease;
+  }
+  .btn:hover { transform: translateY(-2px); background: var(--gold-soft); }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); margin-left: 12px; }
+  .trust { display: flex; gap: 26px; margin-top: 34px; color: var(--muted); font-size: 13px; }
+  .trust b { color: var(--ink); display: block; font-size: 20px; font-family: var(--font-display); }
+
+  /* ---------- The Slab component (the star) ---------- */
+  .slab {
+    position: relative;
+    width: 300px; margin: 0 auto;
+    background: var(--slab-plastic);
+    border: 1px solid rgba(12,19,34,0.10);
+    border-radius: 18px;
+    padding: 14px 14px 18px;
+    box-shadow: 0 24px 50px rgba(12,19,34,0.18), inset 0 1px 0 rgba(255,255,255,0.9);
+  }
+  .slab::after { /* plastic sheen */
+    content:""; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background: linear-gradient(135deg, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0) 38%);
+  }
+  .slab-label {
+    display:flex; align-items:center; justify-content:space-between;
+    background: #0a1020; border:1px solid var(--line);
+    border-radius: 8px; padding: 9px 12px; margin-bottom: 12px;
+  }
+  .slab-label .brand { font-family: var(--font-display); font-weight:800; font-size:10.5px; letter-spacing:1.5px; color: var(--gold); }
+  .slab-label .sub { font-size: 8.5px; color: var(--muted); letter-spacing: 1px; }
+  .grade-badge {
+    text-align:center; background: var(--gold); color:#1a1206;
+    border-radius:6px; padding:4px 9px; font-family: var(--font-display); font-weight:800; line-height:1;
+  }
+  .grade-badge b { font-size: 18px; display:block; }
+  .grade-badge small { font-size: 7px; letter-spacing: 1px; }
+  .slab-window {
+    aspect-ratio: 5/7; border-radius: 10px; overflow:hidden;
+    border: 1px solid rgba(255,255,255,0.14);
+    background:
+      radial-gradient(120% 80% at 30% 10%, rgba(216,178,90,0.30), transparent 55%),
+      conic-gradient(from 200deg at 70% 80%, rgba(120,200,255,0.25), rgba(180,120,255,0.20), rgba(120,255,200,0.18), rgba(120,200,255,0.25));
+    display:flex; align-items:center; justify-content:center;
+  }
+  .slab-window .ph { text-align:center; color: rgba(12,19,34,0.65); font-size: 12px; padding: 0 18px; }
+  .slab-window .ph .big { font-family: var(--font-display); font-size: 15px; font-weight:700; color:#0c1322; margin-bottom:6px; }
+  .slab-window img { width:100%; height:100%; object-fit:cover; display:block; }
+  .barcode { height: 16px; margin-top:2px; display:flex; gap:1.5px; align-items:flex-end; }
+  .barcode i { width:2px; background: var(--muted); display:block; }
+
+  /* ---------- Section heads ---------- */
+  section { padding: 64px 0; }
+  .sec-head { text-align:center; margin-bottom: 40px; }
+  .sec-head .eyebrow { margin-bottom: 10px; }
+  .sec-head h2 { font-size: 34px; font-weight: 800; }
+  .sec-head p { color: var(--muted); margin-top: 10px; }
+
+  /* ---------- Product grid ---------- */
+  .products { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 720px; margin: 0 auto; }
+  .product {
+    background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; transition: border-color .15s ease, transform .15s ease;
+  }
+  .product:hover { border-color: rgba(216,178,90,0.5); transform: translateY(-4px); }
+  .product .mini-slab {
+    aspect-ratio: 4/5; border-radius: 10px; margin-bottom: 16px; overflow:hidden;
+    border:1px solid rgba(12,19,34,0.10);
+    background:#0a1020;
+    display:flex; align-items:center; justify-content:center; color: rgba(255,255,255,0.5); font-size: 12px;
+  }
+  .product .mini-slab img { width:100%; height:100%; object-fit:contain; display:block; }
+  .product h3 { font-size: 17px; font-weight: 700; margin-bottom: 6px; }
+  .product .price { color: var(--gold); font-weight: 700; }
+  .product .price s { color: var(--muted); font-weight: 400; margin-left: 8px; }
+  .product .price .cur { font-size: 11px; color: var(--muted); font-weight: 600; letter-spacing: .5px; }
+  .tag { display:inline-block; font-size: 10.5px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); border:1px solid rgba(216,178,90,0.4); padding: 3px 9px; border-radius: 999px; margin-bottom: 14px; }
+
+  /* ---------- Hero real-card showcase ---------- */
+  .showcase { display:flex; flex-direction:column; align-items:center; gap:20px; }
+  .show-main { width: 320px; max-width: 100%; border-radius: 16px; overflow:hidden; box-shadow: 0 26px 55px rgba(12,19,34,0.24); }
+  .show-main img { width:100%; height:auto; display:block; }
+  .show-thumbs { display:flex; gap:14px; }
+  .show-thumb {
+    width: 88px; height:auto; border-radius: 10px; display:block; cursor:pointer;
+    box-shadow: 0 10px 24px rgba(12,19,34,0.16);
+    opacity: 0.7; border: 2px solid transparent;
+    transition: transform .15s ease, opacity .15s ease, border-color .15s ease;
+  }
+  .show-thumb:hover { transform: translateY(-3px); opacity: 1; }
+  .show-thumb.is-active { opacity: 1; border-color: var(--gold); }
+
+  /* ---------- How it works ---------- */
+  .how { background: var(--bg-2); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .steps { display:grid; grid-template-columns: repeat(3,1fr); gap: 30px; }
+  .step { text-align:center; }
+  .step .num {
+    width:54px; height:54px; margin:0 auto 18px; border-radius:50%;
+    border:1px solid var(--gold); color: var(--gold); font-family: var(--font-display); font-weight:800; font-size:22px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .step h3 { font-size: 18px; margin-bottom: 8px; }
+  .step p { color: var(--muted); font-size: 14px; }
+
+  /* ---------- Testimonial ---------- */
+  .testi-img { max-width: 560px; width: 100%; height: auto; margin: 0 auto; display: block; border-radius: 16px; box-shadow: 0 24px 55px rgba(12,19,34,0.20); }
+
+  /* ---------- Footer ---------- */
+  footer { padding: 50px 0 40px; border-top:1px solid var(--line); }
+  .foot-grid { display:flex; justify-content: space-between; flex-wrap: wrap; gap: 24px; margin-bottom: 30px; }
+  .foot-grid a { color: var(--muted); font-size: 14px; display:block; margin-bottom: 8px; }
+  .foot-grid a:hover { color: var(--ink); }
+  .foot-col h4 { font-size: 13px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 14px; color: var(--ink); }
+  .disclaimer { color: var(--muted); font-size: 11.5px; line-height: 1.7; border-top:1px solid var(--line); padding-top: 22px; }
+
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero h1 { font-size: 38px; }
+    .products { grid-template-columns: 1fr; }
+    .steps { grid-template-columns: 1fr; }
+  }
+</style>
 </head>
 <body>
-  <p>Redirecting to <a href="theme-preview-light.html">Card Vault Customs</a>…</p>
+
+  <div class="announce">★ Free shipping on orders over $75 CAD &nbsp;·&nbsp; Buy 2 Get 1 Free ★</div>
+
+  <header class="site">
+    <div class="wrap nav">
+      <div class="logo">
+        <svg class="logo-icon" width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
+          <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
+          <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
+          <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#e8ecf3" stroke-width="4" stroke-linejoin="round"/>
+        </svg>
+        <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
+      </div>
+      <nav class="nav-links">
+        <a href="design-page.html">Shop</a>
+        <a href="#how">How It Works</a>
+        <a href="about.html">About</a>
+        <a href="faq.html">FAQ</a>
+      </nav>
+      <div class="nav-right">
+        <a href="design-page.html" class="cart">Order Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="design-page.html">Shop</a>
+      <a href="#how">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">Custom Pokémon &amp; One Piece Slabs</div>
+        <h1>Your Card.<br>Your Moment.<br>Slabbed Forever.</h1>
+        <p>We turn your favourite photos into custom collector cards, sealed in a premium display slab with your own personalized label.</p>
+        <div>
+          <a href="design-page.html" class="btn">Create Your Card</a>
+          <a href="#how" class="btn ghost">How It Works</a>
+        </div>
+        <div class="trust">
+          <div><b>48h</b>Design proof</div>
+          <div><b>4–7 days</b>Made &amp; shipped</div>
+          <div><b>1000s</b>Happy collectors</div>
+        </div>
+      </div>
+
+      <!-- Real card showcase -->
+      <div class="showcase">
+        <div class="show-main">
+          <img id="showMain" src="images/slab-boys-glasses.webp" width="640" height="854" fetchpriority="high" alt="Custom family card — Dad & The Boys, graded slab" />
+        </div>
+        <div class="show-thumbs">
+          <img class="show-thumb is-active" src="images/slab-boys-glasses.webp" width="640" height="854" loading="lazy" alt="Dad & The Boys — graded slab" />
+          <img class="show-thumb" src="images/slab-crew-jump.webp" width="640" height="854" loading="lazy" alt="Dad & The Crew — holo Father's Day edition" />
+          <img class="show-thumb" src="images/slab-girls.webp" width="640" height="854" loading="lazy" alt="Dad & The Girls — graded slab" />
+          <img class="show-thumb" src="images/slab-crew-champion.webp" width="640" height="854" loading="lazy" alt="Dad & The Crew — Champion Spirit edition" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <section id="shop">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">Custom Card Shop</div>
+        <h2>Choose Your Style</h2>
+        <p>Graded slab or raw custom card — your design, made for you.</p>
+      </div>
+      <div class="products">
+        <a href="design-page.html" class="product">
+          <div class="mini-slab"><img src="images/slab-girls.webp" width="640" height="854" loading="lazy" alt="Custom graded card slab example — Dad & The Girls" /></div>
+          <div class="tag">Best Seller</div>
+          <h3>Custom Graded Card Slab</h3>
+          <div class="price">$49.99 <span class="cur">CAD</span></div>
+        </a>
+        <a href="design-page.html" class="product">
+          <div class="mini-slab"><img src="images/card-raw-holo.webp" width="640" height="915" loading="lazy" alt="Custom raw card example — Dad & The Crew holo" /></div>
+          <div class="tag">Most Affordable</div>
+          <h3>Custom Card (Raw)</h3>
+          <div class="price">$34.99 <span class="cur">CAD</span></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="how">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">Simple &amp; Fast</div>
+        <h2>How It Works</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="num">1</div>
+          <h3>Design Your Card</h3>
+          <p>Upload your photo, pick slab or raw, then make it yours — choose your card style, add a name or date, and set your slab grade. Submit it all through our easy order form.</p>
+        </div>
+        <div class="step">
+          <div class="num">2</div>
+          <h3>Approve Your Design</h3>
+          <p>We text or email you a watermarked design proof within 48 hours — approve or request changes.</p>
+        </div>
+        <div class="step">
+          <div class="num">3</div>
+          <h3>Wait for Delivery</h3>
+          <p>Once approved, your slab is printed and shipped within 48 hours.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL -->
+  <section id="reviews">
+    <div class="wrap">
+      <div class="sec-head">
+        <div class="eyebrow">Loved By Customers</div>
+        <h2>Real Customers, Real Memories</h2>
+      </div>
+      <img class="testi-img" src="images/testimonial-ashley.webp" width="1024" height="1024" loading="lazy" alt="Customer testimonial from Ashley Kate Brown — Card Vault Customs went above and beyond to make a one-of-a-kind Father's Day card" />
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div class="foot-col">
+          <div class="logo" style="font-size:17px;margin-bottom:14px;">
+            <svg class="logo-icon" width="20" height="27" viewBox="0 0 58 78" aria-hidden="true">
+              <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
+              <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
+              <path d="M29 35 l12 14 -12 14 -12-14 z" fill="none" stroke="#e8ecf3" stroke-width="4" stroke-linejoin="round"/>
+            </svg>
+            <span class="wm">CARD<i>VAULT</i>CUSTOMS</span>
+          </div>
+          <a href="https://www.instagram.com/cardvaultcustoms">@cardvaultcustoms</a>
+          <a href="mailto:cardvaultcustoms@gmail.com">cardvaultcustoms@gmail.com</a>
+        </div>
+        <div class="foot-col">
+          <h4>Shop</h4>
+          <a href="design-page.html">Custom Graded Slab</a>
+          <a href="design-page.html">Custom Card (Raw)</a>
+          <a href="design-page.html">Buy 2 Get 1 Free</a>
+        </div>
+        <div class="foot-col">
+          <h4>Help</h4>
+          <a href="#how">How It Works</a>
+          <a href="faq.html">FAQ</a>
+          <a href="policies.html#shipping">Shipping Policy</a>
+          <a href="policies.html#refunds">Refunds &amp; Returns</a>
+        </div>
+        <div class="foot-col">
+          <h4>Company</h4>
+          <a href="about.html">About Us</a>
+          <a href="mailto:cardvaultcustoms@gmail.com">Contact</a>
+          <a href="policies.html#privacy">Privacy Policy</a>
+          <a href="policies.html#terms">Terms of Service</a>
+        </div>
+      </div>
+      <p class="disclaimer">
+        Card Vault Customs creates original, custom, fan-made novelty cards and display slabs. Our products are <b>not</b> authentic graded cards and are <b>not</b> affiliated with, endorsed by, or licensed by Nintendo, The Pokémon Company, Bandai, or any other rights holder. Any "grade" shown is a cosmetic, customer-selected design element. All trademarks are property of their respective owners.
+      </p>
+    </div>
+  </footer>
+
+  <script src="site.js"></script>
+  <script>
+    (function () {
+      var main = document.getElementById('showMain');
+      var thumbs = document.querySelectorAll('.show-thumb');
+      thumbs.forEach(function (t) {
+        t.addEventListener('click', function () {
+          main.src = t.src;
+          main.alt = t.alt;
+          thumbs.forEach(function (x) { x.classList.remove('is-active'); });
+          t.classList.add('is-active');
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>

@@ -4,28 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Card Vault Customs — FAQ</title>
+<link rel="stylesheet" href="styles.css" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600&display=swap');
-  :root{
-    --bg:#0a0e17; --bg-2:#131a28; --ink:#eef1f7; --muted:#9aa6bd;
-    --gold:#d8b25a; --gold-soft:#e8c97a; --navy:#0c1322; --line:rgba(255,255,255,0.12); --radius:14px;
-    --font-display:'Poppins',sans-serif; --font-body:'Inter',system-ui,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;}
-  body{font-family:var(--font-body);background:radial-gradient(1200px 520px at 50% -120px, rgba(216,178,90,0.10), transparent 60%),var(--bg);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;}
-  h1,h2,h3{font-family:var(--font-display);}
-  a{color:inherit;text-decoration:none;}
-  .wrap{max-width:820px;margin:0 auto;padding:0 24px;}
-
-  .announce{background:var(--gold);color:#1a1206;text-align:center;font-size:12.5px;font-weight:700;letter-spacing:1.2px;padding:9px 12px;text-transform:uppercase;}
-  header.site{position:sticky;top:0;z-index:50;background:rgba(10,14,23,0.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-  .nav{max-width:1120px;margin:0 auto;padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:70px;}
-  .logo{display:flex;align-items:center;gap:9px;font-family:var(--font-display);font-weight:800;font-size:20px;letter-spacing:2px;}
-  .logo .wm i{color:var(--gold);font-style:normal;}
-  .nav-links{display:flex;gap:28px;font-size:14px;color:var(--muted);}
-  .nav-links a:hover{color:var(--ink);}
-  .nav-links a.active{color:var(--ink);font-weight:600;}
-  .cart{font-size:13px;border:1px solid var(--line);padding:8px 14px;border-radius:999px;color:var(--ink);}
+  body{line-height:1.6;}
+  .wrap{max-width:820px;}
 
   /* hero */
   .faq-hero{text-align:center;padding:56px 0 30px;}
@@ -58,15 +40,15 @@
   .cta .btn{display:inline-block;background:var(--gold);color:#1a1206;font-family:var(--font-display);font-weight:700;font-size:14.5px;padding:12px 26px;border-radius:999px;}
   .cta .btn:hover{background:var(--gold-soft);}
 
-  @media (max-width:680px){ .nav-links{display:none;} .faq-hero h1{font-size:30px;} }
+  @media (max-width:680px){ .faq-hero h1{font-size:30px;} }
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 · Buy 2 Get 1 — 50% Off ★</div>
+  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 2 Get 1 Free ★</div>
 
   <header class="site">
     <div class="nav">
-      <a href="theme-preview-light.html" class="logo">
+      <a href="index.html" class="logo">
         <svg width="24" height="32" viewBox="0 0 58 78" aria-hidden="true">
           <rect x="2" y="2" width="54" height="74" rx="9" fill="none" stroke="#e8ecf3" stroke-width="4"/>
           <rect x="11" y="11" width="36" height="11" rx="3" fill="#d8b25a"/>
@@ -76,12 +58,23 @@
       </a>
       <nav class="nav-links">
         <a href="design-page.html">Shop</a>
-        <a href="theme-preview-light.html#how">How It Works</a>
+        <a href="index.html#how">How It Works</a>
         <a href="about.html">About</a>
         <a href="faq.html" class="active">FAQ</a>
       </nav>
-      <a href="design-page.html" class="cart">Cart (0)</a>
+      <div class="nav-right">
+        <a href="design-page.html" class="cart">Order Now</a>
+        <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
     </div>
+    <nav class="mobile-menu" id="mobileMenu">
+      <a href="design-page.html">Shop</a>
+      <a href="index.html#how">How It Works</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+    </nav>
   </header>
 
   <div class="wrap">
@@ -106,13 +99,18 @@
       </details>
 
       <details>
-        <summary>Can I customize the finish, borders, and grade?<span class="plus"></span></summary>
-        <div class="answer">Yes — that's the fun part. You choose your <b>card finish</b> (holographic, foil, matte, or glossy), <b>border style</b>, the <b>name/text</b> on the slab, and the <b>display grade</b> (1–10). The grade is a cosmetic design choice, not a real grading score.</div>
+        <summary>What happens to my photos after my order?<span class="plus"></span></summary>
+        <div class="answer">Your photos are used only to create your card. We keep them for <b>30 days after delivery</b> — so we can quickly fix or reprint anything if needed — then they're permanently deleted. We never share them or feature your card on social media without asking you first. Want them gone sooner? Just <a href="mailto:cardvaultcustoms@gmail.com">email us</a>.</div>
+      </details>
+
+      <details>
+        <summary>Can I customize the finish and grade?<span class="plus"></span></summary>
+        <div class="answer">Yes — that's the fun part. Right on the order form you pick your <b>card finish</b> (holographic, foil, matte, or glossy), the <b>name/text</b> on the card, and for slabs the <b>display grade</b> (1–10). Want a specific border style or any other detail? Just describe it in the notes — we'll work it into your proof. The grade is a cosmetic design choice, not a real grading score.</div>
       </details>
 
       <details>
         <summary>Can I order more than one?<span class="plus"></span></summary>
-        <div class="answer">Absolutely. Set the quantity on the product page, or check out our discounted bundles. Each card in your order can have its own design and details.</div>
+        <div class="answer">Absolutely. Set the quantity on the order page — and with our <b>Buy 2 Get 1 Free</b> deal, every third card is completely free. Each card in your order can have its own design and details.</div>
       </details>
     </section>
 
@@ -147,7 +145,7 @@
 
       <details>
         <summary>Where do you ship?<span class="plus"></span></summary>
-        <div class="answer">From Canada — across Canada, to the US, and internationally. Shipping is a flat <b>$15.99</b>, and <b>free on orders over $75</b>.</div>
+        <div class="answer">From Canada — across Canada, to the US, and internationally. Shipping is a flat <b>$15.99 CAD</b>, and <b>free on orders over $75 CAD</b>. All prices on our site are in Canadian dollars.</div>
       </details>
     </section>
 
@@ -157,12 +155,12 @@
 
       <details>
         <summary>What payment methods do you accept?<span class="plus"></span></summary>
-        <div class="answer">All major credit cards, plus Apple Pay, Google Pay, and Shop Pay — securely at checkout. Your payment details are never stored by us.</div>
+        <div class="answer">All major credit cards, plus Apple Pay and Google Pay — processed securely by Stripe at checkout. Your payment details are never stored by us.</div>
       </details>
 
       <details>
         <summary>Can I get a refund?<span class="plus"></span></summary>
-        <div class="answer">Because every item is custom-made, we can't accept returns for change of mind. But you approve a proof before we print, and we'll repair or replace anything that arrives damaged or different from what you approved. See our Refund Policy for details.</div>
+        <div class="answer">Because every item is custom-made, we can't accept returns for change of mind. But you approve a proof before we print, and we'll repair or replace anything that arrives damaged or different from what you approved. See our <a href="policies.html#refunds">Refund Policy</a> for details.</div>
       </details>
     </section>
 
@@ -189,5 +187,7 @@
       <a href="mailto:cardvaultcustoms@gmail.com" class="btn">Email us</a>
     </div>
   </div>
+
+  <script src="site.js"></script>
 </body>
 </html>
