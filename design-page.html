@@ -146,7 +146,7 @@
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 2 Get 1 Free ★</div>
+  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★</div>
 
   <header class="site">
     <div class="wrap nav">
@@ -356,10 +356,10 @@
     /* ---------- pricing rules ---------- */
     var SHIP_FEE = 15.99;      // flat shipping under the free threshold
     var FREE_SHIP_MIN = 75;    // free shipping at/above this merchandise subtotal
-    var PROMO_EVERY = 3;       // Buy 2 Get 1 Free: 1 in every 3 cards is free
+    var PROMO_EVERY = 4;       // Buy 3 Get 1 Free: 1 in every 4 cards is free
     var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
 
-    // Promo codes (stack with Buy 2 Get 1 Free). expires = first day the code no longer works.
+    // Promo codes (stack with Buy 3 Get 1 Free). expires = first day the code no longer works.
     var PROMO_CODES = {
       SUMMONING2026: { amount:15, freeShip:true, label:'SUMMONING2026', expires:'2026-09-01T04:00:00Z' } // valid through Aug 31 (Eastern)
     };
@@ -376,7 +376,7 @@
       for(i=0;i<qty.slab;i++) list.push({ type:'slab', name:PRODUCTS.slab.name, price:PRODUCTS.slab.price });
       for(i=0;i<qty.raw;i++)  list.push({ type:'raw',  name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price  });
 
-      // Buy 2 Get 1 Free — the cheapest 1 of every 3 cards is free.
+      // Buy 3 Get 1 Free — the cheapest 1 of every 4 cards is free.
       var byCheapest = list.map(function(_,idx){ return idx; })
         .sort(function(a,b){ return list[a].price - list[b].price; });
       var freeCount = Math.floor(list.length / PROMO_EVERY);
@@ -421,7 +421,7 @@
       var bits = [];
       var n = qty.slab + qty.raw;
       if(n > 0) bits.push(n + (n===1 ? ' card' : ' cards'));
-      if(o.discount > 0) bits.push('<span class="disc">Buy 2 Get 1: −' + money(o.discount) + '</span>');
+      if(o.discount > 0) bits.push('<span class="disc">Buy 3 Get 1: −' + money(o.discount) + '</span>');
       if(o.codeOff > 0) bits.push('<span class="disc">' + o.promoCode + ': −' + money(o.codeOff) + '</span>');
       if(n > 0) bits.push(o.shipping > 0 ? ('+' + money(o.shipping) + ' shipping') : 'Free shipping');
       $('totnote').innerHTML = bits.join(' · ');
@@ -580,7 +580,7 @@
       var o = computeOrder();
       var groups = {};
       o.list.forEach(function(c){
-        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(o.codeOff) + ')' : '');
+        var label = c.name + (c.discounted ? ' — Buy 3 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(o.codeOff) + ')' : '');
         var key = label + '|' + c.charged;
         if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
         groups[key].qty++;
@@ -597,7 +597,7 @@
       if(qty.raw>0)  parts.push(qty.raw+'× Raw');
       addons.forEach(function(a){ parts.push(a.name); });
       var s = parts.join(', ');
-      if(o.discount>0) s += ' · Buy2Get1 -'+money(o.discount);
+      if(o.discount>0) s += ' · Buy3Get1 -'+money(o.discount);
       if(o.codeOff>0) s += ' · '+o.promoCode+' -'+money(o.codeOff);
       s += o.shipping>0 ? (' · Ship '+money(o.shipping)) : ' · Free ship';
       return s;
@@ -630,7 +630,7 @@
       if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
       addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
-      if(o.discount>0) html += '<div class="line disc"><span>Buy 2 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
+      if(o.discount>0) html += '<div class="line disc"><span>Buy 3 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
       if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
       html += '<div class="line"><span>Shipping'+(o.shipping>0?'':(o.codeFreeShip?' ('+o.promoCode+')':' (over $75)'))+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){

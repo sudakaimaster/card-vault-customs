@@ -1,7 +1,7 @@
 /* Shared site behavior: announcement bar text + mobile menu toggle.
    Edit the promo in ONE place here and every page updates. */
 (function () {
-  var ANNOUNCE = '★ Free shipping on orders over $75 CAD · Buy 2 Get 1 Free ★';
+  var ANNOUNCE = '★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★';
 
   document.querySelectorAll('.announce').forEach(function (el) {
     el.textContent = ANNOUNCE;
