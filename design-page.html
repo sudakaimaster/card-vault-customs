@@ -480,7 +480,6 @@
     /* ---------- build + render per-card design blocks ---------- */
     var STYLE_OPTS = ['Pokémon','One Piece','Surprise me / Other'];
     var OCC_OPTS = ['Birthday','Anniversary','Graduation','Wedding / Engagement',"Father's Day","Mother's Day","Valentine's Day",'New Baby','Memorial / Tribute','Just Because','Other'];
-    var FINISH_OPTS = ['Holographic','Foil','Matte','Glossy'];
     var GRADE_OPTS = ['10 — Gem Mint','9 — Mint','8 — Near Mint','7 — Excellent','6 — Very Good','5 — Good','4','3','2','1'];
     function opts(list, sel){ return list.map(function(o){ return '<option'+(o===sel?' selected':'')+'>'+o+'</option>'; }).join(''); }
     function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;'); }
@@ -495,7 +494,7 @@
       cards = needed.map(function(type){
         if(pools[type].length){ return pools[type].shift(); }
         return { type:type, productName:PRODUCTS[type].name, price:PRODUCTS[type].price,
-                 photos:[], style:'Pokémon', occasion:'Birthday', finish:'Holographic', grade:'10 — Gem Mint', cardName:'', vision:'' };
+                 photos:[], style:'Pokémon', occasion:'Birthday', grade:'10 — Gem Mint', cardName:'', vision:'' };
       });
     }
     function renderCards(){
@@ -513,12 +512,9 @@
             '<div class="field"><label>Card style <span class="req">*</span></label><select id="style_'+i+'">'+opts(STYLE_OPTS,c.style)+'</select></div>'+
             '<div class="field"><label>Occasion <span class="req">*</span></label><select id="occasion_'+i+'">'+opts(OCC_OPTS,c.occasion)+'</select></div>'+
           '</div>'+
-          '<div class="two">'+
-            '<div class="field"><label>Card finish <span class="req">*</span></label><select id="finish_'+i+'">'+opts(FINISH_OPTS,c.finish)+'</select></div>'+
-            (c.type==='slab'
-              ? '<div class="field"><label>Display grade <span class="hint">cosmetic — you pick it</span></label><select id="grade_'+i+'">'+opts(GRADE_OPTS,c.grade)+'</select></div>'
-              : '')+
-          '</div>'+
+          (c.type==='slab'
+            ? '<div class="two"><div class="field"><label>Display grade <span class="hint">cosmetic — you pick it</span></label><select id="grade_'+i+'">'+opts(GRADE_OPTS,c.grade)+'</select></div></div>'
+            : '')+
           '<div class="field"><label>Card name / text on card <span class="hint">a name, nickname, or date</span></label><input id="cardName_'+i+'" type="text" value="'+esc(c.cardName)+'" placeholder="e.g. ASH KETCHUM · EST. 2026"></div>'+
           '<div class="field"><label>Anything we should know? <span class="hint">optional — keep it short</span></label><textarea id="vision_'+i+'" placeholder="Optional: a name, date, or a few words on the vibe. Leave blank and we\'ll work our magic. ✨">'+esc(c.vision)+'</textarea></div>'+
         '</div>';
@@ -530,7 +526,7 @@
           Promise.all(files.map(compress)).then(function(res){ c.photos = c.photos.concat(res); renderPreviews(i); });
           e.target.value = '';
         });
-        ['style','occasion','finish','grade','cardName','vision'].forEach(function(f){
+        ['style','occasion','grade','cardName','vision'].forEach(function(f){
           var el = $(f+'_'+i);
           if(!el) return;
           el.addEventListener('input', function(){ c[f] = el.value; });
@@ -568,7 +564,6 @@
       for(var i=0;i<cards.length;i++){
         var c = cards[i];
         c.style=$('style_'+i).value; c.occasion=$('occasion_'+i).value;
-        c.finish=$('finish_'+i).value;
         if($('grade_'+i)) c.grade=$('grade_'+i).value;
         c.cardName=$('cardName_'+i).value.trim(); c.vision=$('vision_'+i).value.trim();
         if(c.photos.length===0){ alert('Please upload at least one photo for Card '+(i+1)+'.'); return; }
@@ -623,7 +618,7 @@
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
         cards:cards.map(function(c){
           return { type:c.type, productName:c.productName, price:c.price,
-                   style:c.style, occasion:c.occasion, finish:c.finish,
+                   style:c.style, occasion:c.occasion, finish:'',
                    grade:(c.type==='slab' ? c.grade : ''),
                    cardName:c.cardName, vision:c.vision, photos:c.photos };
         })
@@ -639,7 +634,7 @@
       if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
       html += '<div class="line"><span>Shipping'+(o.shipping>0?'':(o.codeFreeShip?' ('+o.promoCode+')':' (over $75)'))+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){
-        var bits = [c.style, c.occasion, c.finish];
+        var bits = [c.style, c.occasion];
         if(c.type==='slab') bits.push('Grade '+String(c.grade).split(' ')[0]);
         bits.push(c.photos.length+' photo(s)');
         html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+bits.join(' · ')+'</span></div>';
