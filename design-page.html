@@ -103,6 +103,14 @@
   .totnote .disc{color:var(--gold);font-weight:700;}
   .summary .line.disc span:last-child{color:var(--gold);font-weight:700;}
 
+  /* promo code */
+  .promo{display:flex;gap:10px;margin-bottom:8px;}
+  .promo input{flex:1;text-transform:uppercase;}
+  .promo .btn{padding:12px 24px;font-size:14px;}
+  .promo-msg{font-size:13px;margin-bottom:14px;min-height:16px;}
+  .promo-msg.ok{color:var(--gold);font-weight:600;}
+  .promo-msg.bad{color:#ff7a7a;}
+
   /* review summary */
   .summary{border:1px solid var(--line);border-radius:12px;padding:18px;background:var(--field);font-size:14px;}
   .summary .line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed var(--line);}
@@ -279,6 +287,12 @@
       <h2>Review &amp; Pay</h2>
       <div class="sub">Confirm your order. You'll pay securely via Stripe, then we'll send your free proof.</div>
 
+      <div class="promo">
+        <input id="promoInput" type="text" placeholder="Promo code" autocapitalize="characters" autocomplete="off" />
+        <button type="button" class="btn btn-ghost" id="promoApply">Apply</button>
+      </div>
+      <div class="promo-msg" id="promoMsg"></div>
+
       <div class="summary" id="summary"></div>
 
       <div class="row-btns">
@@ -345,6 +359,12 @@
     var PROMO_EVERY = 3;       // Buy 2 Get 1 Free: 1 in every 3 cards is free
     var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
 
+    // Promo codes (stack with Buy 2 Get 1 Free). expires = first day the code no longer works.
+    var PROMO_CODES = {
+      SUMMONING15: { amount:15, freeShip:true, label:'SUMMONING15', expires:'2026-09-01T04:00:00Z' } // valid through Aug 31 (Eastern)
+    };
+    var appliedCode = null;
+
     function money(n){ return '$' + n.toFixed(2); }
     function r2(n){ return Math.round(n*100)/100; }
 
@@ -365,14 +385,31 @@
 
       var itemsSubtotal = r2(list.reduce(function(s,c){ return s + c.price; }, 0));
       var discount      = r2(list.reduce(function(s,c){ return s + (c.price - c.charged); }, 0));
+
+      // Promo code: take the $ amount off the most expensive charged card, so the
+      // Stripe line items (which can't be negative) still sum to the total.
+      var promo = appliedCode ? PROMO_CODES[appliedCode] : null;
+      var codeOff = 0;
+      if(promo && list.length){
+        var pick = -1, best = -1;
+        list.forEach(function(c,j){ if(!c.discounted && c.charged > best){ best = c.charged; pick = j; } });
+        if(pick >= 0){
+          codeOff = r2(Math.min(promo.amount, list[pick].charged));
+          list[pick].charged = r2(list[pick].charged - codeOff);
+          list[pick].codeApplied = true;
+        }
+      }
+
       var addonsTotal   = r2(addons.reduce(function(s,a){ return s + a.price; }, 0));
       var merch         = r2(itemsSubtotal - discount + addonsTotal);
-      var shipping      = (merch >= FREE_SHIP_MIN) ? 0 : SHIP_FEE;
-      var total         = r2(merch + shipping);
+      var codeFreeShip  = !!(promo && promo.freeShip && codeOff > 0);
+      var shipping      = (codeFreeShip || merch >= FREE_SHIP_MIN) ? 0 : SHIP_FEE;
+      var total         = r2(merch - codeOff + shipping);
 
       return { list:list, itemsSubtotal:itemsSubtotal, discount:discount,
                addonsTotal:addonsTotal, merch:merch, shipping:shipping,
-               total:total, freeCount:freeCount };
+               total:total, freeCount:freeCount,
+               promoCode:(codeOff > 0 ? appliedCode : ''), codeOff:codeOff, codeFreeShip:codeFreeShip };
     }
 
     /* ---------- Step 1: quantities + add-ons ---------- */
@@ -385,6 +422,7 @@
       var n = qty.slab + qty.raw;
       if(n > 0) bits.push(n + (n===1 ? ' card' : ' cards'));
       if(o.discount > 0) bits.push('<span class="disc">Buy 2 Get 1: −' + money(o.discount) + '</span>');
+      if(o.codeOff > 0) bits.push('<span class="disc">' + o.promoCode + ': −' + money(o.codeOff) + '</span>');
       if(n > 0) bits.push(o.shipping > 0 ? ('+' + money(o.shipping) + ' shipping') : 'Free shipping');
       $('totnote').innerHTML = bits.join(' · ');
 
@@ -547,7 +585,7 @@
       var o = computeOrder();
       var groups = {};
       o.list.forEach(function(c){
-        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (FREE)' : '');
+        var label = c.name + (c.discounted ? ' — Buy 2 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(o.codeOff) + ')' : '');
         var key = label + '|' + c.charged;
         if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
         groups[key].qty++;
@@ -565,6 +603,7 @@
       addons.forEach(function(a){ parts.push(a.name); });
       var s = parts.join(', ');
       if(o.discount>0) s += ' · Buy2Get1 -'+money(o.discount);
+      if(o.codeOff>0) s += ' · '+o.promoCode+' -'+money(o.codeOff);
       s += o.shipping>0 ? (' · Ship '+money(o.shipping)) : ' · Free ship';
       return s;
     }
@@ -576,6 +615,8 @@
         subtotal:o.merch,              // product revenue after discount (Gross Sales)
         itemsSubtotal:o.itemsSubtotal,
         discount:o.discount,
+        promoCode:o.promoCode,
+        promoDiscount:o.codeOff,
         shipping:o.shipping,
         cardCount:cards.length,
         summary:summaryText(), lineItems:buildLineItems(), addons:addons,
@@ -595,7 +636,8 @@
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
       addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
       if(o.discount>0) html += '<div class="line disc"><span>Buy 2 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
-      html += '<div class="line"><span>Shipping'+(o.shipping>0?'':' (over $75)')+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
+      if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
+      html += '<div class="line"><span>Shipping'+(o.shipping>0?'':(o.codeFreeShip?' ('+o.promoCode+')':' (over $75)'))+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){
         var bits = [c.style, c.occasion, c.finish];
         if(c.type==='slab') bits.push('Grade '+String(c.grade).split(' ')[0]);
@@ -606,6 +648,33 @@
       html += '<div class="line tot"><span>Total</span><span>'+money(o.total)+' CAD</span></div>';
       $('summary').innerHTML = html;
     }
+
+    /* ---------- promo code ---------- */
+    function applyPromo(){
+      var raw = $('promoInput').value.trim().toUpperCase();
+      var msg = $('promoMsg');
+      appliedCode = null;
+      if(!raw){
+        msg.className = 'promo-msg';
+        msg.textContent = '';
+      } else {
+        var p = PROMO_CODES[raw];
+        if(!p){
+          msg.className = 'promo-msg bad';
+          msg.textContent = 'That code isn\'t valid.';
+        } else if(Date.now() >= new Date(p.expires).getTime()){
+          msg.className = 'promo-msg bad';
+          msg.textContent = 'That code has expired.';
+        } else {
+          appliedCode = raw;
+          msg.className = 'promo-msg ok';
+          msg.textContent = '✓ ' + raw + ' applied — $' + p.amount + ' off' + (p.freeShip ? ' + free shipping' : '') + '.';
+        }
+      }
+      recalc(); buildSummary();
+    }
+    $('promoApply').addEventListener('click', applyPromo);
+    $('promoInput').addEventListener('keydown', function(e){ if(e.key === 'Enter'){ e.preventDefault(); applyPromo(); } });
 
     /* ---------- embedded Stripe checkout ---------- */
     var stripe = null, checkout = null;
