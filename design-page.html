@@ -57,6 +57,12 @@
   .cardhead .cb-n{font-family:var(--font-display);font-weight:800;font-size:17px;}
   .cardhead .cb-type{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold);border:1px solid rgba(216,178,90,0.4);padding:3px 9px;border-radius:999px;}
   .ordercontact{border-top:1px solid var(--line);margin-top:8px;padding-top:20px;}
+  .consent{display:flex;align-items:flex-start;gap:12px;border:1px solid var(--line);border-radius:11px;padding:14px 15px;margin:22px 0 6px;cursor:pointer;transition:border-color .15s ease;}
+  .consent:hover{border-color:var(--gold-soft);}
+  .consent.sel{border-color:var(--gold);background:rgba(216,178,90,0.10);}
+  .consent input{width:18px;height:18px;margin-top:2px;flex-shrink:0;accent-color:var(--gold);}
+  .consent .ct{flex:1;font-size:13.5px;line-height:1.5;color:var(--ink);}
+  .consent .ct b{font-weight:600;}
 
   /* add-ons */
   .addons{margin-top:26px;}
@@ -281,6 +287,46 @@
         </div>
       </div>
 
+      <div class="ordercontact">
+        <h3 style="font-size:14px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:14px;font-family:var(--font-body);font-weight:700;">Shipping address</h3>
+        <div class="field">
+          <label>Recipient name <span class="req">*</span> <span class="hint">who we ship it to</span></label>
+          <input id="shipName" type="text" autocomplete="name" placeholder="Full name" />
+        </div>
+        <div class="field">
+          <label>Address <span class="req">*</span></label>
+          <input id="shipAddress" type="text" autocomplete="street-address" placeholder="Street address, apt/unit" />
+        </div>
+        <div class="two">
+          <div class="field">
+            <label>City <span class="req">*</span></label>
+            <input id="shipCity" type="text" autocomplete="address-level2" placeholder="City" />
+          </div>
+          <div class="field">
+            <label>Province / State <span class="req">*</span></label>
+            <input id="shipProvince" type="text" autocomplete="address-level1" placeholder="e.g. ON" />
+          </div>
+        </div>
+        <div class="two">
+          <div class="field">
+            <label>Postal / ZIP code <span class="req">*</span></label>
+            <input id="shipPostal" type="text" autocomplete="postal-code" placeholder="A1A 1A1" />
+          </div>
+          <div class="field">
+            <label>Country <span class="req">*</span></label>
+            <select id="shipCountry" autocomplete="country-name">
+              <option>Canada</option>
+              <option>United States</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <label class="consent" id="consentBox">
+        <input type="checkbox" id="designConsent" />
+        <span class="ct"><b>Before we get started</b> — just a quick note that we use a mix of creative tools and hands-on editing throughout our custom design process. Some of these tools may include AI-assisted features. By moving forward, you’re happy for us to get started.</span>
+      </label>
+
       <div class="row-btns">
         <button class="btn btn-ghost" id="back1">← Back</button>
         <button class="btn btn-gold" id="to3">Next: Review →</button>
@@ -458,6 +504,12 @@
         recalc();
       });
     });
+    (function(){
+      var box = $('designConsent'), wrap = $('consentBox');
+      if(box && wrap){
+        box.addEventListener('change', function(){ wrap.classList.toggle('sel', box.checked); });
+      }
+    })();
 
     /* ---------- photo compression ---------- */
     function compress(file){
@@ -574,6 +626,11 @@
         if(c.photos.length===0){ alert('Please upload at least one photo for Card '+(i+1)+'.'); return; }
       }
       if(!$('proofContact').value.trim()){ alert('Please add a phone or email so we can send your proof.'); return; }
+      if(!$('shipName').value.trim()){ alert('Please add the recipient\'s name for shipping.'); return; }
+      if(!$('shipAddress').value.trim() || !$('shipCity').value.trim() || !$('shipProvince').value.trim() || !$('shipPostal').value.trim()){
+        alert('Please complete the shipping address (address, city, province, and postal code).'); return;
+      }
+      if(!$('designConsent').checked){ alert('Please confirm you’re happy for us to get started with our design process.'); return; }
       buildSummary(); showStep(3);
     });
     $('back2').addEventListener('click', function(){ showStep(2); });
@@ -621,6 +678,15 @@
         cardCount:cards.length,
         summary:summaryText(), lineItems:buildLineItems(), addons:addons,
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
+        designConsent:!!$('designConsent').checked,
+        shipTo:{
+          name:$('shipName').value.trim(),
+          address:$('shipAddress').value.trim(),
+          city:$('shipCity').value.trim(),
+          province:$('shipProvince').value.trim(),
+          postal:$('shipPostal').value.trim(),
+          country:$('shipCountry').value
+        },
         cards:cards.map(function(c){
           return { type:c.type, productName:c.productName, price:c.price,
                    style:c.style, occasion:c.occasion, finish:'',
@@ -645,6 +711,7 @@
         html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+bits.join(' · ')+'</span></div>';
       });
       html += '<div class="line"><span>Proof via</span><span>'+$('proofMethod').value+' · '+$('proofContact').value.trim()+'</span></div>';
+      html += '<div class="line"><span>Ship to</span><span>'+$('shipName').value.trim()+' · '+$('shipAddress').value.trim()+', '+$('shipCity').value.trim()+', '+$('shipProvince').value.trim()+' '+$('shipPostal').value.trim()+', '+$('shipCountry').value+'</span></div>';
       html += '<div class="line tot"><span>Total</span><span>'+money(o.total)+' CAD</span></div>';
       $('summary').innerHTML = html;
     }
