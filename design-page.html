@@ -101,6 +101,13 @@
 
   /* nav buttons + summary */
   .row-btns{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:14px;}
+  .pay-trust{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 18px;margin-top:16px;padding:14px 16px;border:1px solid var(--line);border-radius:11px;background:rgba(255,255,255,0.03);color:var(--muted);font-size:12.5px;line-height:1.4;text-align:center;}
+  .pay-trust span{white-space:nowrap;}
+  .pay-trust b{color:var(--ink);font-weight:600;}
+  @media (max-width:520px){
+    .pay-trust{gap:8px;flex-direction:column;align-items:center;}
+    .pay-trust span{white-space:normal;}
+  }
   .btn{border:none;border-radius:999px;font-family:var(--font-display);font-weight:700;font-size:15px;letter-spacing:.3px;cursor:pointer;padding:14px 30px;transition:transform .15s ease,background .15s ease;}
   .btn-gold{background:var(--gold);color:#1a1206;}
   .btn-gold:hover{background:var(--gold-soft);transform:translateY(-2px);}
@@ -350,7 +357,11 @@
         <button class="btn btn-ghost" id="back2">← Back</button>
         <button class="btn btn-gold" id="pay">Pay securely →</button>
       </div>
-      <p style="color:var(--muted);font-size:12px;margin-top:14px;text-align:center;">🔒 Secure checkout by Stripe · Free design proof before we print</p>
+      <div class="pay-trust" aria-label="Checkout reassurance">
+        <span><b>Secured by Stripe</b></span>
+        <span><b>Free proof</b> before we print</span>
+        <span><b>Ships from Canada</b></span>
+      </div>
     </section>
   </div>
 
