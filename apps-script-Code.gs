@@ -141,10 +141,16 @@ function processQueue() {
       try {
         var obj = JSON.parse(f.getBlob().getDataAsString());
         var folderUrl = saveToDrive(obj.orderId, obj.data);
-        try { notify(obj.orderId, obj.data, folderUrl); } catch (e1) { /* email non-fatal */ }
-        try { logRow(obj.orderId, obj.data, folderUrl); } catch (e2) { /* logging non-fatal */ }
+        // Email and ledger are non-fatal, but never silent: a swallowed error here
+        // is indistinguishable from success in the Executions log, which cost us
+        // real debugging time. Log it so the failure is visible.
+        try { notify(obj.orderId, obj.data, folderUrl); }
+        catch (e1) { Logger.log('EMAIL FAILED for ' + obj.orderId + ': ' + e1); }
+        try { logRow(obj.orderId, obj.data, folderUrl); }
+        catch (e2) { Logger.log('LEDGER FAILED for ' + obj.orderId + ': ' + e2); }
         f.setTrashed(true); // done — remove from queue
       } catch (perr) {
+        Logger.log('QUEUE ITEM FAILED (' + f.getName() + '), will retry: ' + perr);
         leftover = true; // leave the file for a retry on the next run
       }
     });
@@ -392,4 +398,52 @@ function createStripeCheckout(orderId, data, folderUrl) {
   var json = JSON.parse(res.getContentText());
   if (json.error) throw new Error('Stripe: ' + json.error.message);
   return json.client_secret;
+}
+
+/* ---------- Diagnostic ---------- */
+// Run this by hand from the editor when an order comes through but no email
+// arrives. Every check reports independently, so one broken thing can't hide
+// the others. Safe to run anytime — it only sends one small email to the owners.
+function diagnose() {
+  var out = ['=== CARD VAULT PIPELINE DIAGNOSTIC ===', 'Run at: ' + new Date(), ''];
+
+  out.push('Notify list: ' + NOTIFY_LIST);
+  try {
+    out.push('Mail quota left today (recipients): ' + MailApp.getRemainingDailyQuota());
+  } catch (e) { out.push('!! Mail quota check failed: ' + e); }
+
+  try {
+    MailApp.sendEmail(NOTIFY_LIST, 'CVC diagnostic — email path works',
+      'If you are reading this, MailApp can send to the notify list.\nRun at: ' + new Date());
+    out.push('Direct email send: OK (check inbox)');
+  } catch (e) { out.push('!! DIRECT EMAIL SEND FAILED: ' + e); }
+  out.push('');
+
+  try {
+    var q = getQueueFolder(), it = q.getFiles(), names = [];
+    while (it.hasNext()) names.push(it.next().getName());
+    out.push('Queue folder: ' + q.getName() + '  ' + q.getUrl());
+    out.push('Orders waiting in queue (' + names.length + '): ' + (names.join(', ') || 'none'));
+  } catch (e) { out.push('!! QUEUE CHECK FAILED: ' + e); }
+  out.push('');
+
+  ['STRIPE_SECRET_KEY', 'DRIVE_PARENT_FOLDER_ID', 'SITE_URL'].forEach(function (k) {
+    var v = prop(k);
+    out.push('Property ' + k + ': ' + (v ? ('set, ' + v.length + ' chars') : '!! MISSING'));
+  });
+  out.push('');
+
+  try {
+    var names2 = ScriptApp.getProjectTriggers().map(function (t) { return t.getHandlerFunction(); });
+    out.push('Installed triggers: ' + (names2.join(', ') || 'none'));
+  } catch (e) { out.push('!! TRIGGER CHECK FAILED: ' + e); }
+
+  try {
+    var ss = SpreadsheetApp.openById(SALES_SHEET_ID);
+    out.push('Sales ledger reachable: ' + ss.getName());
+  } catch (e) { out.push('!! SALES LEDGER UNREACHABLE: ' + e); }
+
+  var txt = out.join('\n');
+  Logger.log(txt);
+  return txt;
 }
