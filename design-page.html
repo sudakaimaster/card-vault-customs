@@ -427,7 +427,9 @@
     var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
 
     // Promo codes (stack with Buy 3 Get 1 Free). expires = first day the code no longer works.
+    // Use `percent` for a share of the card subtotal, or `amount` for a flat dollar value.
     var PROMO_CODES = {
+      WELCOME10: { percent:10, freeShip:false, label:'WELCOME10', expires:'2028-01-01T05:00:00Z' }, // email signup offer
       SUMMONING2026: { amount:15, freeShip:true, label:'SUMMONING2026', expires:'2026-09-01T04:00:00Z' }, // valid through Aug 31 (Eastern)
       CVC10: { amount:10, freeShip:false, label:'CVC10', expires:'2027-01-01T05:00:00Z' }, // $10 make-good; valid through Dec 31, 2026 (Eastern)
       GOAT15: { amount:15, freeShip:true, label:'GOAT15', expires:'2027-01-01T05:00:00Z' } // $15 + free ship; valid through Dec 31, 2026 (Eastern)
@@ -455,18 +457,31 @@
       var itemsSubtotal = r2(list.reduce(function(s,c){ return s + c.price; }, 0));
       var discount      = r2(list.reduce(function(s,c){ return s + (c.price - c.charged); }, 0));
 
-      // Promo code: take the $ amount off the most expensive charged card, so the
-      // Stripe line items (which can't be negative) still sum to the total.
+      // Promo code: reduce the price of the cards themselves, because Stripe line
+      // items can't be negative. Percent codes take a share of the card subtotal
+      // after Buy 3 Get 1; flat codes take a fixed dollar amount. Either way the
+      // reduction spreads across the charged cards, starting with the priciest, so
+      // a large order still gets the full discount instead of being capped at one
+      // card's price.
       var promo = appliedCode ? PROMO_CODES[appliedCode] : null;
       var codeOff = 0;
       if(promo && list.length){
-        var pick = -1, best = -1;
-        list.forEach(function(c,j){ if(!c.discounted && c.charged > best){ best = c.charged; pick = j; } });
-        if(pick >= 0){
-          codeOff = r2(Math.min(promo.amount, list[pick].charged));
-          list[pick].charged = r2(list[pick].charged - codeOff);
-          list[pick].codeApplied = true;
-        }
+        var target = promo.percent
+          ? r2((itemsSubtotal - discount) * promo.percent / 100)
+          : promo.amount;
+        var payable = [];
+        list.forEach(function(c,j){ if(!c.discounted && c.charged > 0) payable.push(j); });
+        payable.sort(function(a,b){ return list[b].charged - list[a].charged; });
+        var left = target;
+        payable.forEach(function(j){
+          if(left <= 0) return;
+          var take = r2(Math.min(left, list[j].charged));
+          list[j].charged      = r2(list[j].charged - take);
+          list[j].codeApplied  = true;
+          list[j].codeOffAmount = take;
+          codeOff = r2(codeOff + take);
+          left    = r2(left - take);
+        });
       }
 
       var addonsTotal   = r2(addons.reduce(function(s,a){ return s + a.price; }, 0));
@@ -698,7 +713,7 @@
       var o = computeOrder();
       var groups = {};
       o.list.forEach(function(c){
-        var label = c.name + (c.discounted ? ' — Buy 3 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(o.codeOff) + ')' : '');
+        var label = c.name + (c.discounted ? ' — Buy 3 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(c.codeOffAmount) + ')' : '');
         var key = label + '|' + c.charged;
         if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
         groups[key].qty++;
@@ -804,7 +819,7 @@
         } else {
           appliedCode = raw;
           msg.className = 'promo-msg ok';
-          msg.textContent = '✓ ' + raw + ' applied — $' + p.amount + ' off' + (p.freeShip ? ' + free shipping' : '') + '.';
+          msg.textContent = '✓ ' + raw + ' applied — ' + (p.percent ? (p.percent + '% off') : ('$' + p.amount + ' off')) + (p.freeShip ? ' + free shipping' : '') + '.';
         }
       }
       recalc(); buildSummary();

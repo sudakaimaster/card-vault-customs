@@ -47,6 +47,15 @@ function doGet() {
 function doPost(e) {
   try {
     var data = JSON.parse(e.postData.contents);
+
+    // Email capture from the site popup. A completely different shape of request,
+    // so it short-circuits before any order handling.
+    if (data && data.action === 'subscribe') {
+      return ContentService
+        .createTextOutput(JSON.stringify(saveSubscriber(data)))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     var orderId = 'CVC-' + new Date().getTime();
 
     // FAST PATH: create the Stripe session first — this is all the customer needs
@@ -400,6 +409,48 @@ function createStripeCheckout(orderId, data, folderUrl) {
   return json.client_secret;
 }
 
+/* ---------- Email subscribers ---------- */
+// Lives in its own spreadsheet, created on the first signup. The id is kept in
+// script properties so we reuse the same sheet forever after.
+function subscriberSheet() {
+  var id = prop('SUBSCRIBER_SHEET_ID');
+  if (id) {
+    try { return SpreadsheetApp.openById(id).getSheets()[0]; }
+    catch (e) { /* deleted or unshared — fall through and make a fresh one */ }
+  }
+  var ss = SpreadsheetApp.create('Card Vault Customs — Email Subscribers');
+  var sh = ss.getSheets()[0];
+  sh.appendRow(['Signed up', 'Email', 'Code given', 'Signed up on page', 'Consent wording']);
+  sh.setFrozenRows(1);
+  sh.setColumnWidth(1, 160);
+  sh.setColumnWidth(2, 240);
+  sh.setColumnWidth(5, 420);
+  PropertiesService.getScriptProperties().setProperty('SUBSCRIBER_SHEET_ID', ss.getId());
+  return sh;
+}
+
+// CASL expects proof of when and how someone opted in, so the consent wording and
+// timestamp are stored alongside the address rather than just the address itself.
+function saveSubscriber(data) {
+  var email = String(data.email || '').trim().toLowerCase();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(email)) {
+    return { ok: false, error: 'invalid email' };
+  }
+
+  var sh = subscriberSheet();
+  var last = sh.getLastRow();
+  if (last > 1) {
+    var seen = sh.getRange(2, 2, last - 1, 1).getValues().map(function (r) {
+      return String(r[0]).trim().toLowerCase();
+    });
+    // Someone signing up twice shouldn't show up twice in a marketing list.
+    if (seen.indexOf(email) > -1) return { ok: true, duplicate: true };
+  }
+
+  sh.appendRow([new Date(), email, data.code || '', data.source || '', data.consent || '']);
+  return { ok: true };
+}
+
 /* ---------- Diagnostic ---------- */
 // Run this by hand from the editor when an order comes through but no email
 // arrives. Every check reports independently, so one broken thing can't hide
@@ -442,6 +493,13 @@ function diagnose() {
     var ss = SpreadsheetApp.openById(SALES_SHEET_ID);
     out.push('Sales ledger reachable: ' + ss.getName());
   } catch (e) { out.push('!! SALES LEDGER UNREACHABLE: ' + e); }
+
+  try {
+    var sub = subscriberSheet();
+    var count = Math.max(0, sub.getLastRow() - 1);
+    out.push('Email subscribers: ' + count);
+    out.push('Subscriber sheet: ' + sub.getParent().getUrl());
+  } catch (e) { out.push('!! SUBSCRIBER SHEET FAILED: ' + e); }
 
   var txt = out.join('\n');
   Logger.log(txt);
