@@ -91,7 +91,7 @@ Copy each block into **Products → Add product**. Prices are starting suggestio
 - **Bundle to raise order value.** A 2-card bundle priced just under 2× single nudges bigger orders.
 - **Use compare-at prices** to show savings (Shopify displays the strikethrough automatically).
 - **Free shipping over $50** pairs well with the $59 single-slab price — most orders clear it.
-- **Add-ons via the upload app:** rush turnaround (+$15), display stand (+$8), gift wrapping (+$5). These are high-margin upsells.
+- **Add-ons via the upload app:** rush turnaround (+$15) applies to the whole order. Display stand (+$5, slabs only) and gift wrapping (+$5) are chosen per card, so they scale with order size. These are high-margin upsells.
 - Track your **per-unit cost** (printing + slab + mailer + label) and keep margin above ~60% on the base item.
 
 ## Franchise = a product option, not a category
