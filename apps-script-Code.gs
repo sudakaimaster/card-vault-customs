@@ -244,12 +244,16 @@ function detailsText(orderId, data) {
     lines.push('  Style: ' + c.style);
     lines.push('  Occasion: ' + (c.occasion || '—'));
     lines.push('  Name on card: ' + (c.cardName || '—'));
+    lines.push('  Gift wrap: ' + (c.giftWrap ? 'YES' : 'no'));
     lines.push('  Notes: ' + (c.vision || '—'));
     lines.push('  Photos: ' + (c.photos ? c.photos.length : 0));
     lines.push('');
   });
   if (data.addons && data.addons.length) {
     lines.push('Add-ons: ' + data.addons.map(function (a) { return a.name + ' (+$' + a.price + ')'; }).join(', '));
+  }
+  if (Number(data.giftWrapCount) > 0) {
+    lines.push('Gift wrapping: ' + data.giftWrapCount + ' card(s) (+$' + data.giftWrapTotal + ') — see per-card list above');
   }
   return lines.join('\n');
 }
@@ -312,6 +316,7 @@ function logRow(orderId, data, folderUrl) {
     (Number(data.discount) > 0) ? ('Buy 3 Get 1 discount: -$' + data.discount) : '',
     (data.promoCode ? ('Promo ' + data.promoCode + ': -$' + data.promoDiscount) : ''),
     occasions ? ('Occasions: ' + occasions) : '',
+    (Number(data.giftWrapCount) > 0) ? ('Gift wrap: ' + data.giftWrapCount + ' card(s) +$' + data.giftWrapTotal) : '',
     'Proof: ' + data.proofMethod + ' ' + data.proofContact,
     shipOneLine ? ('Ship to: ' + shipOneLine) : '',
     (data.designConsent ? 'Design consent: yes' : ''),
