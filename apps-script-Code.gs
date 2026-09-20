@@ -244,6 +244,7 @@ function detailsText(orderId, data) {
     lines.push('  Style: ' + c.style);
     lines.push('  Occasion: ' + (c.occasion || '—'));
     lines.push('  Name on card: ' + (c.cardName || '—'));
+    if (c.type !== 'raw') lines.push('  Display stand: ' + (c.stand ? 'YES' : 'no'));
     lines.push('  Gift wrap: ' + (c.giftWrap ? 'YES' : 'no'));
     lines.push('  Notes: ' + (c.vision || '—'));
     lines.push('  Photos: ' + (c.photos ? c.photos.length : 0));
@@ -251,6 +252,9 @@ function detailsText(orderId, data) {
   });
   if (data.addons && data.addons.length) {
     lines.push('Add-ons: ' + data.addons.map(function (a) { return a.name + ' (+$' + a.price + ')'; }).join(', '));
+  }
+  if (Number(data.standCount) > 0) {
+    lines.push('Display stands: ' + data.standCount + ' slab(s) (+$' + data.standTotal + ') — see per-card list above');
   }
   if (Number(data.giftWrapCount) > 0) {
     lines.push('Gift wrapping: ' + data.giftWrapCount + ' card(s) (+$' + data.giftWrapTotal + ') — see per-card list above');
@@ -316,6 +320,7 @@ function logRow(orderId, data, folderUrl) {
     (Number(data.discount) > 0) ? ('Buy 3 Get 1 discount: -$' + data.discount) : '',
     (data.promoCode ? ('Promo ' + data.promoCode + ': -$' + data.promoDiscount) : ''),
     occasions ? ('Occasions: ' + occasions) : '',
+    (Number(data.standCount) > 0) ? ('Stands: ' + data.standCount + ' slab(s) +$' + data.standTotal) : '',
     (Number(data.giftWrapCount) > 0) ? ('Gift wrap: ' + data.giftWrapCount + ' card(s) +$' + data.giftWrapTotal) : '',
     'Proof: ' + data.proofMethod + ' ' + data.proofContact,
     shipOneLine ? ('Ship to: ' + shipOneLine) : '',

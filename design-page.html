@@ -259,18 +259,13 @@
 
       <div class="addons">
         <h3>Add extras (optional)</h3>
-        <label class="addon" data-addon="Display stand" data-price="5">
-          <input type="checkbox" />
-          <span class="ai"><b>Display stand</b><span>Show off your slab on a clear acrylic stand</span></span>
-          <span class="ap">+$5</span>
-        </label>
         <label class="addon" data-addon="Rush turnaround (48h)" data-price="15">
           <input type="checkbox" />
           <span class="ai"><b>Rush turnaround</b><span>Bump your order to the front — proof within 24h</span></span>
           <span class="ap">+$15</span>
         </label>
       </div>
-      <div class="addnote">Gift wrapping is chosen per card on the next step.</div>
+      <div class="addnote">Gift wrapping and display stands are chosen per card on the next step.</div>
 
       <div class="totbar">Total: <b id="tot1">$49.99</b> CAD</div>
       <div class="totnote" id="totnote"></div>
@@ -425,6 +420,7 @@
 
     /* ---------- pricing rules ---------- */
     var GIFT_WRAP_PRICE = 5;   // per card, chosen individually on step 2
+    var STAND_PRICE = 5;       // per slab, chosen individually on step 2 (slabs only)
     var SHIP_FEE = 15.99;      // flat shipping under the free threshold
     var FREE_SHIP_MIN = 75;    // free shipping at/above this merchandise subtotal
     var PROMO_EVERY = 4;       // Buy 3 Get 1 Free: 1 in every 4 cards is free
@@ -474,18 +470,23 @@
       }
 
       var addonsTotal   = r2(addons.reduce(function(s,a){ return s + a.price; }, 0));
-      // Gift wrap is per card. Only count cards that still exist at this quantity,
-      // since step 1 can be revisited after cards were already configured.
-      var wrapCount = 0;
-      for(i=0; i<cards.length && i<list.length; i++){ if(cards[i].giftWrap) wrapCount++; }
+      // Gift wrap and display stands are per card. Only count cards that still exist
+      // at this quantity, since step 1 can be revisited after cards were configured.
+      var wrapCount = 0, standCount = 0;
+      for(i=0; i<cards.length && i<list.length; i++){
+        if(cards[i].giftWrap) wrapCount++;
+        if(cards[i].stand && cards[i].type === 'slab') standCount++;
+      }
       var wrapTotal     = r2(wrapCount * GIFT_WRAP_PRICE);
-      var merch         = r2(itemsSubtotal - discount + addonsTotal + wrapTotal);
+      var standTotal    = r2(standCount * STAND_PRICE);
+      var merch         = r2(itemsSubtotal - discount + addonsTotal + wrapTotal + standTotal);
       var codeFreeShip  = !!(promo && promo.freeShip && codeOff > 0);
       var shipping      = (codeFreeShip || merch >= FREE_SHIP_MIN) ? 0 : SHIP_FEE;
       var total         = r2(merch - codeOff + shipping);
 
       return { list:list, itemsSubtotal:itemsSubtotal, discount:discount,
                addonsTotal:addonsTotal, wrapCount:wrapCount, wrapTotal:wrapTotal,
+               standCount:standCount, standTotal:standTotal,
                merch:merch, shipping:shipping,
                total:total, freeCount:freeCount,
                promoCode:(codeOff > 0 ? appliedCode : ''), codeOff:codeOff, codeFreeShip:codeFreeShip };
@@ -580,7 +581,7 @@
         if(pools[type].length){ return pools[type].shift(); }
         return { type:type, productName:PRODUCTS[type].name, price:PRODUCTS[type].price,
                  photos:[], style:'Pokémon', occasion:'Birthday', grade:'10 — Gem Mint', cardName:'', vision:'',
-                 giftWrap:false };
+                 giftWrap:false, stand:false };
       });
     }
     function renderCards(){
@@ -603,10 +604,17 @@
             : '')+
           '<div class="field"><label>Card name / text on card <span class="hint">a name, nickname, or date</span></label><input id="cardName_'+i+'" type="text" value="'+esc(c.cardName)+'" placeholder="e.g. ASH KETCHUM · EST. 2026"></div>'+
           '<div class="field"><label>Anything we should know? <span class="hint">optional — keep it short</span></label><textarea id="vision_'+i+'" placeholder="Optional: a name, date, or a few words on the vibe. Leave blank and we\'ll work our magic. ✨">'+esc(c.vision)+'</textarea></div>'+
+          (c.type==='slab'
+            ? '<label class="cardwrap'+(c.stand?' sel':'')+'" id="standbox_'+i+'">'+
+                '<input type="checkbox" id="stand_'+i+'"'+(c.stand?' checked':'')+'>'+
+                '<span class="cw-t"><b>Display stand for this slab</b><span>Show it off on a clear acrylic stand</span></span>'+
+                '<span class="cw-p">+$'+STAND_PRICE+'</span>'+
+              '</label>'
+            : '')+
           '<label class="cardwrap'+(c.giftWrap?' sel':'')+'" id="wrapbox_'+i+'">'+
             '<input type="checkbox" id="giftWrap_'+i+'"'+(c.giftWrap?' checked':'')+'>'+
             '<span class="cw-t"><b>Gift wrap this card</b><span>Wrapped &amp; ready to gift with a note card</span></span>'+
-            '<span class="cw-p">+$5</span>'+
+            '<span class="cw-p">+$'+GIFT_WRAP_PRICE+'</span>'+
           '</label>'+
         '</div>';
       }).join('');
@@ -629,6 +637,14 @@
           gwBox.classList.toggle('sel', gw.checked);
           recalc();
         });
+        var sd = $('stand_'+i), sdBox = $('standbox_'+i);
+        if(sd){
+          sd.addEventListener('change', function(){
+            c.stand = sd.checked;
+            sdBox.classList.toggle('sel', sd.checked);
+            recalc();
+          });
+        }
         renderPreviews(i);
       });
     }
@@ -689,6 +705,7 @@
       });
       var li = Object.keys(groups).map(function(k){ return groups[k]; });
       addons.forEach(function(a){ li.push({ name:a.name, price:a.price, qty:1 }); });
+      if(o.standCount > 0) li.push({ name:'Display stand', price:STAND_PRICE, qty:o.standCount });
       if(o.wrapCount > 0) li.push({ name:'Gift wrapping', price:GIFT_WRAP_PRICE, qty:o.wrapCount });
       if(o.shipping > 0) li.push({ name:'Shipping', price:o.shipping, qty:1 });
       return li;
@@ -699,6 +716,7 @@
       if(qty.slab>0) parts.push(qty.slab+'× Slab');
       if(qty.raw>0)  parts.push(qty.raw+'× Raw');
       addons.forEach(function(a){ parts.push(a.name); });
+      if(o.standCount>0) parts.push(o.standCount+'× Stand');
       if(o.wrapCount>0) parts.push(o.wrapCount+'× Gift wrap');
       var s = parts.join(', ');
       if(o.discount>0) s += ' · Buy3Get1 -'+money(o.discount);
@@ -719,6 +737,8 @@
         shipping:o.shipping,
         giftWrapCount:o.wrapCount,
         giftWrapTotal:o.wrapTotal,
+        standCount:o.standCount,
+        standTotal:o.standTotal,
         cardCount:cards.length,
         summary:summaryText(), lineItems:buildLineItems(), addons:addons,
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
@@ -735,7 +755,8 @@
           return { type:c.type, productName:c.productName, price:c.price,
                    style:c.style, occasion:c.occasion, finish:'',
                    grade:(c.type==='slab' ? c.grade : ''),
-                   cardName:c.cardName, vision:c.vision, giftWrap:!!c.giftWrap, photos:c.photos };
+                   cardName:c.cardName, vision:c.vision,
+                   giftWrap:!!c.giftWrap, stand:(c.type==='slab' && !!c.stand), photos:c.photos };
         })
       };
     }
@@ -745,6 +766,7 @@
       if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
       addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
+      if(o.standCount>0) html += '<div class="line"><span>+ Display stand ('+o.standCount+' slab'+(o.standCount===1?'':'s')+')</span><span>'+money(o.standTotal)+'</span></div>';
       if(o.wrapCount>0) html += '<div class="line"><span>+ Gift wrapping ('+o.wrapCount+' card'+(o.wrapCount===1?'':'s')+')</span><span>'+money(o.wrapTotal)+'</span></div>';
       if(o.discount>0) html += '<div class="line disc"><span>Buy 3 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
       if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
@@ -752,6 +774,7 @@
       cards.forEach(function(c, i){
         var bits = [c.style, c.occasion];
         if(c.type==='slab') bits.push('Grade '+String(c.grade).split(' ')[0]);
+        if(c.type==='slab' && c.stand) bits.push('Stand');
         if(c.giftWrap) bits.push('Gift wrapped');
         bits.push(c.photos.length+' photo(s)');
         html += '<div class="line"><span>Card '+(i+1)+' — '+(c.type==='slab'?'Slab':'Raw')+'</span><span>'+bits.join(' · ')+'</span></div>';
