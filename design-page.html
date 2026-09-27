@@ -426,10 +426,23 @@
     var PROMO_EVERY = 4;       // Buy 3 Get 1 Free: 1 in every 4 cards is free
     var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
 
-    // Promo codes (stack with Buy 3 Get 1 Free). expires = first day the code no longer works.
-    // Use `percent` for a share of the card subtotal, or `amount` for a flat dollar value.
+    // Promo codes (stack with Buy 3 Get 1 Free).
+    //   percent   share of the card subtotal after Buy 3 Get 1
+    //   amount    flat dollar value off
+    //   freeRush  waives the Rush add-on instead of discounting cards
+    //   minCards  refuses to apply below this many cards
+    //   starts    first moment the code works (omit for "already live")
+    //   expires   first moment it stops working
+    // Percentages are preferred for seasonal sales: they can never take a bigger
+    // share of a small order than a large one, so they stay safe unattended.
     var PROMO_CODES = {
       WELCOME10: { percent:10, freeShip:false, label:'WELCOME10', expires:'2028-01-01T05:00:00Z' }, // email signup offer
+      // Black Friday weekend. 2-card minimum keeps single-card orders at full margin.
+      VAULT20:   { percent:20, minCards:2, label:'VAULT20', starts:'2026-11-27T05:00:00Z', expires:'2026-11-30T05:00:00Z' },
+      // Cyber Monday. Gives away turnaround pressure rather than cash.
+      CYBERRUSH: { freeRush:true, label:'CYBERRUSH', starts:'2026-11-30T05:00:00Z', expires:'2026-12-01T05:00:00Z' },
+      // Boxing Week. Self-purchase window with no delivery deadline, so price is the lever.
+      BOXING15:  { percent:15, label:'BOXING15', starts:'2026-12-26T05:00:00Z', expires:'2027-01-04T05:00:00Z' },
       SUMMONING2026: { amount:15, freeShip:true, label:'SUMMONING2026', expires:'2026-09-01T04:00:00Z' }, // valid through Aug 31 (Eastern)
       CVC10: { amount:10, freeShip:false, label:'CVC10', expires:'2027-01-01T05:00:00Z' }, // $10 make-good; valid through Dec 31, 2026 (Eastern)
       GOAT15: { amount:15, freeShip:true, label:'GOAT15', expires:'2027-01-01T05:00:00Z' } // $15 + free ship; valid through Dec 31, 2026 (Eastern)
@@ -464,8 +477,24 @@
       // a large order still gets the full discount instead of being capped at one
       // card's price.
       var promo = appliedCode ? PROMO_CODES[appliedCode] : null;
-      var codeOff = 0;
-      if(promo && list.length){
+      var codeOff = 0, rushOff = 0, codeNote = '';
+
+      // Conditions a code can fail even after passing the date check at entry,
+      // because the basket can change afterwards.
+      if(promo && promo.minCards && list.length < promo.minCards){
+        codeNote = appliedCode + ' needs at least ' + promo.minCards + ' cards — add one more to use it.';
+        promo = null;
+      }
+
+      // A free-Rush code discounts the add-on, not the cards.
+      if(promo && promo.freeRush){
+        var rush = null;
+        addons.forEach(function(a){ if(/rush/i.test(a.name)) rush = a; });
+        if(rush){ rushOff = rush.price; }
+        else { codeNote = 'Tick "Rush turnaround" in step 1 to use ' + appliedCode + '.'; }
+      }
+
+      if(promo && !promo.freeRush && list.length){
         var target = promo.percent
           ? r2((itemsSubtotal - discount) * promo.percent / 100)
           : promo.amount;
@@ -494,7 +523,7 @@
       }
       var wrapTotal     = r2(wrapCount * GIFT_WRAP_PRICE);
       var standTotal    = r2(standCount * STAND_PRICE);
-      var merch         = r2(itemsSubtotal - discount + addonsTotal + wrapTotal + standTotal);
+      var merch         = r2(itemsSubtotal - discount + addonsTotal - rushOff + wrapTotal + standTotal);
       var codeFreeShip  = !!(promo && promo.freeShip && codeOff > 0);
       var shipping      = (codeFreeShip || merch >= FREE_SHIP_MIN) ? 0 : SHIP_FEE;
       var total         = r2(merch - codeOff + shipping);
@@ -502,9 +531,10 @@
       return { list:list, itemsSubtotal:itemsSubtotal, discount:discount,
                addonsTotal:addonsTotal, wrapCount:wrapCount, wrapTotal:wrapTotal,
                standCount:standCount, standTotal:standTotal,
-               merch:merch, shipping:shipping,
+               merch:merch, shipping:shipping, rushOff:rushOff, codeNote:codeNote,
                total:total, freeCount:freeCount,
-               promoCode:(codeOff > 0 ? appliedCode : ''), codeOff:codeOff, codeFreeShip:codeFreeShip };
+               promoCode:((codeOff > 0 || rushOff > 0) ? appliedCode : ''),
+               codeOff:codeOff, codeFreeShip:codeFreeShip };
     }
 
     /* ---------- Step 1: quantities + add-ons ---------- */
@@ -518,8 +548,17 @@
       if(n > 0) bits.push(n + (n===1 ? ' card' : ' cards'));
       if(o.discount > 0) bits.push('<span class="disc">Buy 3 Get 1: −' + money(o.discount) + '</span>');
       if(o.codeOff > 0) bits.push('<span class="disc">' + o.promoCode + ': −' + money(o.codeOff) + '</span>');
+      if(o.rushOff > 0) bits.push('<span class="disc">' + o.promoCode + ': Rush free</span>');
       if(n > 0) bits.push(o.shipping > 0 ? ('+' + money(o.shipping) + ' shipping') : 'Free shipping');
       $('totnote').innerHTML = bits.join(' · ');
+
+      // A code can stop qualifying after the basket changes, so the reason is
+      // refreshed on every recalc rather than only when the code is entered.
+      var pmsg = $('promoMsg');
+      if(appliedCode && o.codeNote){
+        pmsg.className = 'promo-msg bad';
+        pmsg.textContent = o.codeNote;
+      }
 
       document.querySelectorAll('.choice').forEach(function(c){
         c.classList.toggle('has', qty[c.getAttribute('data-product')] > 0);
@@ -719,7 +758,11 @@
         groups[key].qty++;
       });
       var li = Object.keys(groups).map(function(k){ return groups[k]; });
-      addons.forEach(function(a){ li.push({ name:a.name, price:a.price, qty:1 }); });
+      addons.forEach(function(a){
+        // A waived Rush is left out entirely rather than sent to Stripe at $0.
+        if(o.rushOff > 0 && /rush/i.test(a.name)) return;
+        li.push({ name:a.name, price:a.price, qty:1 });
+      });
       if(o.standCount > 0) li.push({ name:'Display stand', price:STAND_PRICE, qty:o.standCount });
       if(o.wrapCount > 0) li.push({ name:'Gift wrapping', price:GIFT_WRAP_PRICE, qty:o.wrapCount });
       if(o.shipping > 0) li.push({ name:'Shipping', price:o.shipping, qty:1 });
@@ -730,7 +773,7 @@
       var parts = [];
       if(qty.slab>0) parts.push(qty.slab+'× Slab');
       if(qty.raw>0)  parts.push(qty.raw+'× Raw');
-      addons.forEach(function(a){ parts.push(a.name); });
+      addons.forEach(function(a){ parts.push(a.name + ((o.rushOff > 0 && /rush/i.test(a.name)) ? ' (FREE)' : '')); });
       if(o.standCount>0) parts.push(o.standCount+'× Stand');
       if(o.wrapCount>0) parts.push(o.wrapCount+'× Gift wrap');
       var s = parts.join(', ');
@@ -754,6 +797,7 @@
         giftWrapTotal:o.wrapTotal,
         standCount:o.standCount,
         standTotal:o.standTotal,
+        rushWaived:o.rushOff > 0,
         cardCount:cards.length,
         summary:summaryText(), lineItems:buildLineItems(), addons:addons,
         proofMethod:$('proofMethod').value, proofContact:$('proofContact').value.trim(),
@@ -780,7 +824,10 @@
       var html = '';
       if(qty.slab>0) html += '<div class="line"><span>'+qty.slab+' × '+PRODUCTS.slab.name+'</span><span>'+money(qty.slab*PRODUCTS.slab.price)+'</span></div>';
       if(qty.raw>0)  html += '<div class="line"><span>'+qty.raw+' × '+PRODUCTS.raw.name+'</span><span>'+money(qty.raw*PRODUCTS.raw.price)+'</span></div>';
-      addons.forEach(function(a){ html += '<div class="line"><span>+ '+a.name+'</span><span>'+money(a.price)+'</span></div>'; });
+      addons.forEach(function(a){
+        var freed = o.rushOff > 0 && /rush/i.test(a.name);
+        html += '<div class="line'+(freed?' disc':'')+'"><span>+ '+a.name+(freed?' — '+o.promoCode:'')+'</span><span>'+(freed?'FREE':money(a.price))+'</span></div>';
+      });
       if(o.standCount>0) html += '<div class="line"><span>+ Display stand ('+o.standCount+' slab'+(o.standCount===1?'':'s')+')</span><span>'+money(o.standTotal)+'</span></div>';
       if(o.wrapCount>0) html += '<div class="line"><span>+ Gift wrapping ('+o.wrapCount+' card'+(o.wrapCount===1?'':'s')+')</span><span>'+money(o.wrapTotal)+'</span></div>';
       if(o.discount>0) html += '<div class="line disc"><span>Buy 3 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
@@ -816,10 +863,17 @@
         } else if(Date.now() >= new Date(p.expires).getTime()){
           msg.className = 'promo-msg bad';
           msg.textContent = 'That code has expired.';
+        } else if(p.starts && Date.now() < new Date(p.starts).getTime()){
+          // Seasonal codes get printed and shared early; don't honour them yet.
+          msg.className = 'promo-msg bad';
+          msg.textContent = 'That code isn\'t active yet.';
         } else {
           appliedCode = raw;
           msg.className = 'promo-msg ok';
-          msg.textContent = '✓ ' + raw + ' applied — ' + (p.percent ? (p.percent + '% off') : ('$' + p.amount + ' off')) + (p.freeShip ? ' + free shipping' : '') + '.';
+          var what = p.freeRush ? 'free Rush upgrade'
+                   : p.percent  ? (p.percent + '% off')
+                                : ('$' + p.amount + ' off');
+          msg.textContent = '✓ ' + raw + ' applied — ' + what + (p.freeShip ? ' + free shipping' : '') + '.';
         }
       }
       recalc(); buildSummary();

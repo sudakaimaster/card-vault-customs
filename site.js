@@ -1,7 +1,41 @@
 /* Shared site behavior: announcement bar text + mobile menu toggle.
    Edit the promo in ONE place here and every page updates. */
 (function () {
-  var ANNOUNCE = '★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★';
+  var DEFAULT = '★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★';
+
+  /* Seasonal banners, checked in order — first match wins. Dates are Eastern,
+     expressed as UTC. Order-by dates come from the published 4-7 business day
+     build time plus transit; a real deadline sells better than a discount, so
+     these replace the standing promo during the holiday run. */
+  var SEASONAL = [
+    { from: '2026-11-18T05:00:00Z', to: '2026-11-27T05:00:00Z',
+      text: '★ Christmas order-by: Dec 1 for the US · Dec 4 for Canada ★' },
+    { from: '2026-11-27T05:00:00Z', to: '2026-11-30T05:00:00Z',
+      text: '★ Black Friday — 20% off 2 or more with VAULT20 · still arrives by Christmas ★' },
+    { from: '2026-11-30T05:00:00Z', to: '2026-12-01T05:00:00Z',
+      text: '★ Cyber Monday — free Rush upgrade with CYBERRUSH · last day for US Christmas delivery ★' },
+    { from: '2026-12-01T05:00:00Z', to: '2026-12-05T05:00:00Z',
+      text: '★ Final days to order for Christmas — Canada closes Dec 4 ★' },
+    { from: '2026-12-05T05:00:00Z', to: '2026-12-12T05:00:00Z',
+      text: '★ Past the standard cutoff — add Rush and it still lands by Christmas ★' },
+    { from: '2026-12-12T05:00:00Z', to: '2026-12-26T05:00:00Z',
+      text: '★ Ordering now? Arrives after Christmas — perfect for New Year ★' },
+    { from: '2026-12-26T05:00:00Z', to: '2027-01-04T05:00:00Z',
+      text: '★ Boxing Week — 15% off everything with BOXING15 ★' },
+    { from: '2027-01-07T05:00:00Z', to: '2027-01-27T05:00:00Z',
+      text: "★ Valentine's order-by: Jan 21 for the US · Jan 26 for Canada ★" }
+  ];
+
+  function announcement() {
+    var now = Date.now();
+    for (var i = 0; i < SEASONAL.length; i++) {
+      var s = SEASONAL[i];
+      if (now >= new Date(s.from).getTime() && now < new Date(s.to).getTime()) return s.text;
+    }
+    return DEFAULT;
+  }
+
+  var ANNOUNCE = announcement();
 
   document.querySelectorAll('.announce').forEach(function (el) {
     el.textContent = ANNOUNCE;

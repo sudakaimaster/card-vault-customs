@@ -266,7 +266,11 @@ function detailsText(orderId, data) {
     lines.push('');
   });
   if (data.addons && data.addons.length) {
-    lines.push('Add-ons: ' + data.addons.map(function (a) { return a.name + ' (+$' + a.price + ')'; }).join(', '));
+    lines.push('Add-ons: ' + data.addons.map(function (a) {
+      // A Rush waived by a promo still appears in addons; don't imply it was paid for.
+      var waived = data.rushWaived && /rush/i.test(a.name);
+      return a.name + (waived ? ' (FREE via ' + (data.promoCode || 'promo') + ')' : ' (+$' + a.price + ')');
+    }).join(', '));
   }
   if (Number(data.standCount) > 0) {
     lines.push('Display stands: ' + data.standCount + ' slab(s) (+$' + data.standTotal + ') — see per-card list above');
