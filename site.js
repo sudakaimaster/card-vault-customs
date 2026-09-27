@@ -1,7 +1,7 @@
 /* Shared site behavior: announcement bar text + mobile menu toggle.
    Edit the promo in ONE place here and every page updates. */
 (function () {
-  var DEFAULT = '★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★';
+  var DEFAULT = '★ Free shipping on orders over $75 CAD · Buy 1 Get 1 50% Off ★';
 
   /* Seasonal banners, checked in order — first match wins. Dates are Eastern,
      expressed as UTC. Order-by dates come from the published 4-7 business day
@@ -101,7 +101,7 @@
       '<div class="ecap-kicker">You\'re in</div>' +
       '<h3>Here\'s your <i>10% off</i> code</h3>' +
       '<span class="ecap-code">' + CODE + '</span>' +
-      '<p class="ecap-sub" style="margin:14px 0 0;">Type it into the promo box at checkout. It stacks on top of Buy 3 Get 1 Free.</p>' +
+      '<p class="ecap-sub" style="margin:14px 0 0;">Type it into the promo box at checkout. It stacks on top of Buy 1 Get 1 50% Off.</p>' +
       '<p class="ecap-fine">Screenshot this or write it down — we don\'t email the code.</p>' +
       '<a class="ecap-btn" href="design-page.html" style="display:block;text-align:center;margin-top:15px;text-decoration:none;">Start designing &rarr;</a>';
     box.querySelector('.ecap-x').addEventListener('click', function () { close('subscribed'); });

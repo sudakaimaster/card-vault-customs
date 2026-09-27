@@ -176,7 +176,7 @@
 </style>
 </head>
 <body>
-  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 3 Get 1 Free ★</div>
+  <div class="announce">★ Free shipping on orders over $75 CAD · Buy 1 Get 1 50% Off ★</div>
 
   <header class="site">
     <div class="wrap nav">
@@ -423,11 +423,11 @@
     var STAND_PRICE = 5;       // per slab, chosen individually on step 2 (slabs only)
     var SHIP_FEE = 15.99;      // flat shipping under the free threshold
     var FREE_SHIP_MIN = 75;    // free shipping at/above this merchandise subtotal
-    var PROMO_EVERY = 4;       // Buy 3 Get 1 Free: 1 in every 4 cards is free
-    var PROMO_OFF = 0;         // charged fraction for the free card (0 = free, applied to the cheapest cards)
+    var PROMO_EVERY = 2;       // Buy 1 Get 1 50% Off: 1 in every 2 cards is half price
+    var PROMO_OFF = 0.5;       // charged fraction for the discounted card (applied to the cheapest cards)
 
-    // Promo codes (stack with Buy 3 Get 1 Free).
-    //   percent   share of the card subtotal after Buy 3 Get 1
+    // Promo codes (stack with Buy 1 Get 1 50% Off).
+    //   percent   share of the card subtotal after the BOGO discount
     //   amount    flat dollar value off
     //   freeRush  waives the Rush add-on instead of discounting cards
     //   minCards  refuses to apply below this many cards
@@ -460,7 +460,7 @@
       for(i=0;i<qty.slab;i++) list.push({ type:'slab', name:PRODUCTS.slab.name, price:PRODUCTS.slab.price });
       for(i=0;i<qty.raw;i++)  list.push({ type:'raw',  name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price  });
 
-      // Buy 3 Get 1 Free — the cheapest 1 of every 4 cards is free.
+      // Buy 1 Get 1 50% Off — the cheaper card of every pair is half price.
       var byCheapest = list.map(function(_,idx){ return idx; })
         .sort(function(a,b){ return list[a].price - list[b].price; });
       var freeCount = Math.floor(list.length / PROMO_EVERY);
@@ -472,7 +472,7 @@
 
       // Promo code: reduce the price of the cards themselves, because Stripe line
       // items can't be negative. Percent codes take a share of the card subtotal
-      // after Buy 3 Get 1; flat codes take a fixed dollar amount. Either way the
+      // after the BOGO discount; flat codes take a fixed dollar amount. Either way the
       // reduction spreads across the charged cards, starting with the priciest, so
       // a large order still gets the full discount instead of being capped at one
       // card's price.
@@ -546,7 +546,7 @@
       var bits = [];
       var n = qty.slab + qty.raw;
       if(n > 0) bits.push(n + (n===1 ? ' card' : ' cards'));
-      if(o.discount > 0) bits.push('<span class="disc">Buy 3 Get 1: −' + money(o.discount) + '</span>');
+      if(o.discount > 0) bits.push('<span class="disc">Buy 1 Get 1 50%: −' + money(o.discount) + '</span>');
       if(o.codeOff > 0) bits.push('<span class="disc">' + o.promoCode + ': −' + money(o.codeOff) + '</span>');
       if(o.rushOff > 0) bits.push('<span class="disc">' + o.promoCode + ': Rush free</span>');
       if(n > 0) bits.push(o.shipping > 0 ? ('+' + money(o.shipping) + ' shipping') : 'Free shipping');
@@ -752,7 +752,7 @@
       var o = computeOrder();
       var groups = {};
       o.list.forEach(function(c){
-        var label = c.name + (c.discounted ? ' — Buy 3 Get 1 (FREE)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(c.codeOffAmount) + ')' : '');
+        var label = c.name + (c.discounted ? ' — Buy 1 Get 1 (50% OFF)' : '') + (c.codeApplied ? ' — ' + o.promoCode + ' (−' + money(c.codeOffAmount) + ')' : '');
         var key = label + '|' + c.charged;
         if(!groups[key]) groups[key] = { name:label, price:c.charged, qty:0 };
         groups[key].qty++;
@@ -777,7 +777,7 @@
       if(o.standCount>0) parts.push(o.standCount+'× Stand');
       if(o.wrapCount>0) parts.push(o.wrapCount+'× Gift wrap');
       var s = parts.join(', ');
-      if(o.discount>0) s += ' · Buy3Get1 -'+money(o.discount);
+      if(o.discount>0) s += ' · BOGO50 -'+money(o.discount);
       if(o.codeOff>0) s += ' · '+o.promoCode+' -'+money(o.codeOff);
       s += o.shipping>0 ? (' · Ship '+money(o.shipping)) : ' · Free ship';
       return s;
@@ -830,7 +830,7 @@
       });
       if(o.standCount>0) html += '<div class="line"><span>+ Display stand ('+o.standCount+' slab'+(o.standCount===1?'':'s')+')</span><span>'+money(o.standTotal)+'</span></div>';
       if(o.wrapCount>0) html += '<div class="line"><span>+ Gift wrapping ('+o.wrapCount+' card'+(o.wrapCount===1?'':'s')+')</span><span>'+money(o.wrapTotal)+'</span></div>';
-      if(o.discount>0) html += '<div class="line disc"><span>Buy 3 Get 1 — FREE</span><span>−'+money(o.discount)+'</span></div>';
+      if(o.discount>0) html += '<div class="line disc"><span>Buy 1 Get 1 — 50% OFF</span><span>−'+money(o.discount)+'</span></div>';
       if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
       html += '<div class="line"><span>Shipping'+(o.shipping>0?'':(o.codeFreeShip?' ('+o.promoCode+')':' (over $75)'))+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){

@@ -336,7 +336,7 @@ function logRow(orderId, data, folderUrl) {
     .filter(String).join(', ');
   var notes = [
     data.summary || '',
-    (Number(data.discount) > 0) ? ('Buy 3 Get 1 discount: -$' + data.discount) : '',
+    (Number(data.discount) > 0) ? ('Buy 1 Get 1 50% discount: -$' + data.discount) : '',
     (data.promoCode ? ('Promo ' + data.promoCode + ': -$' + data.promoDiscount) : ''),
     occasions ? ('Occasions: ' + occasions) : '',
     (Number(data.standCount) > 0) ? ('Stands: ' + data.standCount + ' slab(s) +$' + data.standTotal) : '',
