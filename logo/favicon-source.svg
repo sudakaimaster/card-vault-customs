@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512"
+     role="img" aria-label="Card Vault Customs">
+  <!-- Favicon source. Designed for a circular crop: Google, Twitter and most
+       mobile launchers mask icons to a circle, so nothing meaningful may sit
+       outside a centre circle of radius 256. Flat two-colour fills only, and a
+       single silhouette, because at 16px anything finer turns to mush. The gold
+       field (rather than navy) is deliberate: it keeps the mark visible against
+       the white background of a search results page. -->
+  <rect width="512" height="512" fill="#d8b25a"/>
+  <path d="M146.88,104.64 L365.12,104.64 L432.00,203.20 L256.00,407.36 L80.00,203.20 Z" fill="#0c1322"/>
+</svg>
