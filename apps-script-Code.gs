@@ -7,7 +7,7 @@
  *   2. Then, in the BACKGROUND (a one-time trigger moments later):
  *        - Saves the customer's photo(s) into a per-order folder in YOUR Google Drive
  *        - Emails the order to all 3 owners (see NOTIFY_LIST below)
- *        - Appends a sales row to your shared ledger spreadsheet (auto-calcs Net Profit)
+ *        - Appends a row to the orders ledger (auto-calcs Net Profit)
  *   3. If the background hand-off FAILS, the order details are emailed to you
  *      immediately as a fallback — an order can never be silently lost.
  *
@@ -16,21 +16,28 @@
  *   DRIVE_PARENT_FOLDER_ID id of the Drive folder to save orders into (optional)
  *   SITE_URL               your site base, e.g. https://cardvaultcustoms.com
  *
- * IMPORTANT: the Google account you DEPLOY this with must have EDIT access to the
- * sales spreadsheet (SALES_SHEET_ID). Share the sheet with that account if needed.
+ * The orders ledger needs no setup: run setupOrderSheet() once (or just take an
+ * order) and the script creates the spreadsheet in the deploying account's own
+ * Drive, then remembers its id. Nothing to share, nothing to paste.
  */
 
 /* ===================== CONFIG ===================== */
 // Order notifications go to ALL of these addresses (edit here anytime):
 var NOTIFY_LIST = 'cardvaultcustoms@gmail.com,kevin.thi.tran@gmail.com,stephanie.sl.ly@gmail.com';
 
-// Sales ledger spreadsheet + tab (gid). Must be shared with the deploying account.
-var SALES_SHEET_ID = '1k_OjCbs3TUVzOs_481LMbb3v9EiZy1EKBZVyos49o7Y';
-var SALES_SHEET_GID = 1252351518;
+// Orders ledger. Deliberately NOT a hardcoded id: the previous one pointed at a
+// spreadsheet that went missing, and because logging is non-fatal every order
+// afterwards succeeded while quietly recording nothing. The script now owns the
+// file it writes to and recreates it if it ever disappears.
+var ORDER_SHEET_NAME = 'Card Vault Customs — Orders';
 
-// Estimated Stripe fee (CAD standard): 2.9% + $0.30 — used for the Platform Fees column.
+// Estimated Stripe fee (CAD standard): 2.9% + $0.30 — used for the Stripe fee column.
 var STRIPE_FEE_PCT = 0.029;
 var STRIPE_FEE_FIXED = 0.30;
+
+// Your product cost per card, used to pre-fill the Card cost column so Net profit
+// is meaningful the moment a row lands. Override any cell by typing over it.
+var COGS_PER_CARD = 5;
 /* ================================================== */
 
 function prop(key, fallback) {
@@ -292,81 +299,150 @@ function notify(orderId, data, folderUrl) {
   MailApp.sendEmail(to, subject, body);
 }
 
-/* ---------- Sales ledger ---------- */
-function getSheetByGid(ss, gid) {
-  var sheets = ss.getSheets();
-  for (var i = 0; i < sheets.length; i++) {
-    if (sheets[i].getSheetId() === gid) return sheets[i];
+/* ---------- Orders ledger ---------- */
+// Columns are grouped left to right: what the order is, then what you owe the
+// customer (fulfilment), then the money. Two columns are yours to fill in —
+// Postage cost and, if you want to override it, Card cost.
+var ORDER_HEADERS = [
+  'Date', 'Order #', 'Status', 'Customer', 'Proof via',           // A–E  what came in
+  'Cards', 'Type', 'What they ordered', 'Occasions',              // F–I  the build
+  'Rush', 'Stands', 'Gift wrap',                                  // J–L  add-ons
+  'BOGO discount', 'Promo code', 'Promo discount',                // M–O  what you gave away
+  'Gross sales', 'Shipping charged', 'Total charged',              // P–R  what they paid
+  'Stripe fee (est)', 'Postage cost', 'Card cost', 'Net profit',   // S–V  what it cost you
+  'Ship to', 'Photos'                                             // W–X  logistics
+];
+
+var ORDER_STATES = ['New', 'Proof sent', 'Changes requested', 'Approved', 'Printed', 'Shipped', 'Done'];
+
+// Created on first use and remembered in script properties. If the file is ever
+// trashed we untrash it rather than starting a second ledger; only a genuinely
+// unreachable id causes a fresh one to be built.
+function orderSheet() {
+  var id = prop('ORDER_SHEET_ID');
+  if (id) {
+    try {
+      var f = DriveApp.getFileById(id);
+      if (f.isTrashed()) f.setTrashed(false);
+      var sh = SpreadsheetApp.openById(id).getSheets()[0];
+      if (sh.getLastRow() === 0) formatOrderSheet(sh);
+      return sh;
+    } catch (e) { /* deleted for good or unshared — fall through and build a new one */ }
   }
-  return sheets[0];
+  var ss = SpreadsheetApp.create(ORDER_SHEET_NAME);
+  var sheet = ss.getSheets()[0];
+  sheet.setName('Orders');
+  formatOrderSheet(sheet);
+  PropertiesService.getScriptProperties().setProperty('ORDER_SHEET_ID', ss.getId());
+  return sheet;
+}
+
+function formatOrderSheet(sheet) {
+  sheet.appendRow(ORDER_HEADERS);
+  sheet.setFrozenRows(1);
+  sheet.setFrozenColumns(2);
+  sheet.getRange(1, 1, 1, ORDER_HEADERS.length)
+    .setFontWeight('bold').setBackground('#0c1322').setFontColor('#d8b25a')
+    .setVerticalAlignment('middle');
+  sheet.setRowHeight(1, 34);
+
+  var N = 2000;
+  sheet.getRange(2, 1, N, 1).setNumberFormat('yyyy-mm-dd  hh:mm');
+  // Money columns M,O,P,Q,R,S,T,U,V
+  [13, 15, 16, 17, 18, 19, 20, 21, 22].forEach(function (c) {
+    sheet.getRange(2, c, N, 1).setNumberFormat('$#,##0.00');
+  });
+  // Fulfilment state lives beside the money so there is only one place to look.
+  sheet.getRange(2, 3, N, 1).setDataValidation(
+    SpreadsheetApp.newDataValidation().requireValueInList(ORDER_STATES, true)
+      .setAllowInvalid(false).build()
+  );
+
+  var widths = [150, 165, 135, 150, 180, 55, 95, 300, 150, 65, 65, 80,
+                115, 110, 115, 110, 125, 115, 120, 115, 95, 110, 300, 230];
+  widths.forEach(function (w, i) { sheet.setColumnWidth(i + 1, w); });
+}
+
+// Run once from the editor to create the ledger and get its link, without
+// waiting for a real order to arrive.
+function setupOrderSheet() {
+  var sh = orderSheet();
+  var url = sh.getParent().getUrl();
+  Logger.log('Orders ledger ready: ' + url);
+  try {
+    MailApp.sendEmail(NOTIFY_LIST, 'Card Vault — your new orders sheet',
+      'Your orders ledger is ready. Every order from now on appends a row here:\n\n' + url +
+      '\n\nColumns you fill in yourself: Postage cost (and Card cost if $' + COGS_PER_CARD +
+      ' per card is ever wrong). Net profit calculates itself.');
+  } catch (e) { /* the link is in the log either way */ }
+  return url;
 }
 
 function logRow(orderId, data, folderUrl) {
-  var ss = SpreadsheetApp.openById(SALES_SHEET_ID);
-  var sheet = getSheetByGid(ss, SALES_SHEET_GID);
-
-  var HEADERS = ['Date','Order / Ref #','Platform','Item / Description','Product Type',
-    'Qty','Unit Price','Gross Sales','Shipping Collected','Platform Fees',
-    'Shipping Cost','COGS (per order)','Net Profit','Notes'];
-  if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
-
+  var sheet = orderSheet();
   var cards = data.cards || [];
   var typeSet = {};
   cards.forEach(function (c) { typeSet[c.type] = true; });
   var productType = (Object.keys(typeSet).length > 1) ? 'Mixed'
     : ((cards[0] && cards[0].type === 'raw') ? 'Raw Card' : 'Graded Slab');
 
-  // Unit Price only when a single uniform product and no add-ons
-  var unitPrice = '';
-  if (cards.length) {
-    var p0 = cards[0].price, uniform = true;
-    cards.forEach(function (c) { if (c.price !== p0) uniform = false; });
-    if (uniform && (!data.addons || !data.addons.length)) unitPrice = p0;
-  }
-
   var charged = Number(data.total) || 0;     // full amount Stripe collected
-  // Gross Sales = product revenue after discount; falls back to total for old payloads.
+  // Gross sales = product revenue after the BOGO discount but before any promo code;
+  // falls back to the total for payloads written by older versions of the site.
   var gross = Number(data.subtotal != null ? data.subtotal : data.total) || 0;
-  var shippingCollected = Number(data.shipping) || 0;
-  // Stripe fee applies to the full charge (products + shipping).
+  // Stripe's fee applies to the full charge, products and shipping together.
   var fee = Math.round((charged * STRIPE_FEE_PCT + STRIPE_FEE_FIXED) * 100) / 100;
-  var occasions = cards.map(function (c) { return c.occasion; }).filter(String).join(', ');
+  // Deduped: four cards for the same occasion should read "Christmas", not
+  // "Christmas, Christmas, Christmas, Christmas".
+  var seenOcc = {}, occList = [];
+  cards.forEach(function (c) {
+    if (c.occasion && !seenOcc[c.occasion]) { seenOcc[c.occasion] = true; occList.push(c.occasion); }
+  });
+  var occasions = occList.join(', ');
   var ship = data.shipTo || {};
   var shipOneLine = [ship.name, ship.address, ship.city, ship.province, ship.postal, ship.country]
     .filter(String).join(', ');
-  var notes = [
-    data.summary || '',
-    (Number(data.discount) > 0) ? ('Buy 1 Get 1 50% discount: -$' + data.discount) : '',
-    (data.promoCode ? ('Promo ' + data.promoCode + ': -$' + data.promoDiscount) : ''),
-    occasions ? ('Occasions: ' + occasions) : '',
-    (Number(data.standCount) > 0) ? ('Stands: ' + data.standCount + ' slab(s) +$' + data.standTotal) : '',
-    (Number(data.giftWrapCount) > 0) ? ('Gift wrap: ' + data.giftWrapCount + ' card(s) +$' + data.giftWrapTotal) : '',
-    'Proof: ' + data.proofMethod + ' ' + data.proofContact,
-    shipOneLine ? ('Ship to: ' + shipOneLine) : '',
-    (data.designConsent ? 'Design consent: yes' : ''),
-    folderUrl
-  ].filter(String).join(' · ');
+
+  // A promo can waive Rush, so "Yes" would overstate what they paid for it.
+  var rush = '';
+  (data.addons || []).forEach(function (a) {
+    if (/rush/i.test(a.name)) rush = data.rushWaived ? 'FREE' : 'Yes';
+  });
 
   sheet.appendRow([
-    new Date(),                              // Date
-    orderId,                                 // Order / Ref #
-    'Website',                               // Platform
-    data.summary || (cards.length + ' card(s)'), // Item / Description
-    productType,                             // Product Type
-    (data.cardCount || cards.length),        // Qty
-    unitPrice,                               // Unit Price
-    gross,                                   // Gross Sales (after discount)
-    shippingCollected,                       // Shipping Collected
-    fee,                                     // Platform Fees (est. Stripe)
-    '',                                      // Shipping Cost (you fill in)
-    '',                                      // COGS per order (you fill in)
-    '',                                      // Net Profit (formula set below)
-    notes                                    // Notes
+    new Date(),                                   // A  Date
+    orderId,                                      // B  Order #
+    'New',                                        // C  Status — move it along as you work
+    ship.name || data.proofContact || '',         // D  Customer
+    (data.proofMethod || '') + ' ' + (data.proofContact || ''), // E  Proof via
+    (data.cardCount || cards.length),             // F  Cards
+    productType,                                  // G  Type
+    data.summary || (cards.length + ' card(s)'),  // H  What they ordered
+    occasions,                                    // I  Occasions
+    rush,                                         // J  Rush
+    Number(data.standCount) || '',                // K  Stands
+    Number(data.giftWrapCount) || '',             // L  Gift wrap
+    Number(data.discount) || 0,                   // M  BOGO discount
+    data.promoCode || '',                         // N  Promo code
+    Number(data.promoDiscount) || 0,              // O  Promo discount
+    gross,                                        // P  Gross sales
+    Number(data.shipping) || 0,                   // Q  Shipping charged
+    charged,                                      // R  Total charged
+    fee,                                          // S  Stripe fee (est)
+    '',                                           // T  Postage cost — you fill in
+    '',                                           // U  Card cost — formula below
+    '',                                           // V  Net profit — formula below
+    shipOneLine,                                  // W  Ship to
+    folderUrl                                     // X  Photos
   ]);
 
-  // Net Profit = Gross + Shipping Collected - Platform Fees - Shipping Cost - COGS
   var r = sheet.getLastRow();
-  sheet.getRange(r, 13).setFormula('=H' + r + '+I' + r + '-J' + r + '-K' + r + '-L' + r);
+  // Card cost is a formula, not a value, so correcting COGS later is one edit
+  // rather than a rewrite of every historical row.
+  sheet.getRange(r, 21).setFormula('=F' + r + '*' + COGS_PER_CARD);
+  // Net profit works from what Stripe actually collected, which already nets off
+  // both the BOGO discount and any promo code — using gross here would double-count.
+  sheet.getRange(r, 22).setFormula('=R' + r + '-S' + r + '-T' + r + '-U' + r);
 }
 
 /* ---------- Stripe ---------- */
@@ -494,9 +570,10 @@ function diagnose() {
   } catch (e) { out.push('!! TRIGGER CHECK FAILED: ' + e); }
 
   try {
-    var ss = SpreadsheetApp.openById(SALES_SHEET_ID);
-    out.push('Sales ledger reachable: ' + ss.getName());
-  } catch (e) { out.push('!! SALES LEDGER UNREACHABLE: ' + e); }
+    var osh = orderSheet();
+    out.push('Orders logged: ' + Math.max(0, osh.getLastRow() - 1));
+    out.push('Orders sheet: ' + osh.getParent().getUrl());
+  } catch (e) { out.push('!! ORDERS SHEET FAILED: ' + e); }
 
   try {
     var sub = subscriberSheet();
