@@ -489,6 +489,99 @@ function createStripeCheckout(orderId, data, folderUrl) {
   return json.client_secret;
 }
 
+/* ---------- One-off payment links ---------- */
+/**
+ * For orders taken in person, over DM, or anywhere the website's order form was
+ * never involved. You set the amount; Stripe hosts the page.
+ *
+ * TO USE: edit the four values below, pick `paymentLink` in the function
+ * dropdown, press Run. The link is written to the execution log and emailed to
+ * the notify list. Send it to the customer.
+ *
+ * A Payment Link is used rather than a Checkout Session on purpose: a session
+ * url dies after 24 hours, which is no good for something you message to
+ * someone. This link has no expiry but is capped at one completed payment, so
+ * it cannot be forwarded and reused.
+ */
+function paymentLink() {
+  return makePaymentLink({
+    amount:      0,              // <-- dollars, e.g. 89.99
+    description: '',             // <-- what the customer sees on the payment page
+    currency:    'CAD',          // 'USD' to bill a US customer in their own dollars
+    ship:        ['US', 'CA']    // countries offered in the address form
+  });
+}
+
+function makePaymentLink(opts) {
+  var key = prop('STRIPE_SECRET_KEY');
+  if (!key) throw new Error('Missing STRIPE_SECRET_KEY');
+
+  var amount = Number(opts.amount);
+  if (!(amount > 0)) throw new Error('Set an amount first — edit paymentLink() and put your price in `amount`.');
+  var desc = String(opts.description || '').trim();
+  if (!desc) throw new Error('Set a description first — the customer sees it on the payment page.');
+
+  var currency = String(opts.currency || 'CAD').toLowerCase();
+  var cents = String(Math.round(amount * 100));
+
+  // Payment Links need a real Price object; they will not take an inline price
+  // the way Checkout Sessions do. Creating the price with product_data makes the
+  // product in the same call, so there is nothing to tidy up in the dashboard.
+  var priceRes = stripePost('https://api.stripe.com/v1/prices', key, {
+    'currency': currency,
+    'unit_amount': cents,
+    'product_data[name]': desc
+  });
+
+  var payload = {
+    'line_items[0][price]': priceRes.id,
+    'line_items[0][quantity]': '1',
+    // One completed payment only. Without this the link stays chargeable forever
+    // and anyone it is forwarded to could pay on it again.
+    'restrictions[completed_sessions][limit]': '1',
+    'phone_number_collection[enabled]': 'true',
+    'after_completion[type]': 'hosted_confirmation',
+    'after_completion[hosted_confirmation][custom_message]':
+      'Thanks! We will send your design proof within 48 hours. Reply to our message with any changes — nothing gets printed until you approve it.',
+    // Marks these apart from website orders in the Stripe dashboard, since they
+    // never pass through doPost and so never get a CVC- order id.
+    'metadata[source]': 'manual payment link',
+    'metadata[created]': new Date().toISOString()
+  };
+
+  // Physical goods, so the address is not optional.
+  (opts.ship || ['US', 'CA']).forEach(function (c, i) {
+    payload['shipping_address_collection[allowed_countries][' + i + ']'] = String(c).toUpperCase();
+  });
+
+  var link = stripePost('https://api.stripe.com/v1/payment_links', key, payload);
+
+  var msg = 'Payment link ready\n\n' + link.url +
+    '\n\nFor: ' + desc +
+    '\nAmount: ' + currency.toUpperCase() + ' $' + amount.toFixed(2) +
+    '\nGood for one payment only. Collects shipping address and phone.' +
+    '\n\nHeads up: this does NOT run through the website, so it will not create an' +
+    '\norder email or a row in the orders sheet. Add that row by hand once it is paid.';
+  Logger.log(msg);
+  try { MailApp.sendEmail(NOTIFY_LIST, 'Card Vault — payment link for ' + desc, msg); } catch (e) {}
+  return link.url;
+}
+
+// Shared POST so both Stripe calls handle errors the same way. Stripe wants
+// form-encoded integers as strings; Apps Script will happily send "1.0" for a
+// raw number and Stripe rejects it, which is why callers pass strings.
+function stripePost(url, key, payload) {
+  var res = UrlFetchApp.fetch(url, {
+    method: 'post',
+    headers: { 'Authorization': 'Bearer ' + key },
+    payload: payload,
+    muteHttpExceptions: true
+  });
+  var json = JSON.parse(res.getContentText());
+  if (json.error) throw new Error('Stripe (' + url.split('/').pop() + '): ' + json.error.message);
+  return json;
+}
+
 /* ---------- Email subscribers ---------- */
 // Lives in its own spreadsheet, created on the first signup. The id is kept in
 // script properties so we reuse the same sheet forever after.
