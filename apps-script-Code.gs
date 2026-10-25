@@ -508,7 +508,8 @@ function paymentLink() {
     amount:      0,              // <-- dollars, e.g. 89.99
     description: '',             // <-- what the customer sees on the payment page
     currency:    'CAD',          // 'USD' to bill a US customer in their own dollars
-    ship:        ['US', 'CA']    // countries offered in the address form
+    ship:        ['US', 'CA'],   // countries offered in the address form; [] to skip it
+    note:        ''              // what they read after paying; blank uses the card-proof wording
   });
 }
 
@@ -541,7 +542,10 @@ function makePaymentLink(opts) {
     'restrictions[completed_sessions][limit]': '1',
     'phone_number_collection[enabled]': 'true',
     'after_completion[type]': 'hosted_confirmation',
-    'after_completion[hosted_confirmation][custom_message]':
+    // Default wording is card-specific, so anything that isn't a card order
+    // should pass its own `note` — a charcuterie customer reading about design
+    // proofs will think they paid the wrong business.
+    'after_completion[hosted_confirmation][custom_message]': String(opts.note || '').trim() ||
       'Thanks! We will send your design proof within 48 hours. Reply to our message with any changes — nothing gets printed until you approve it.',
     // Marks these apart from website orders in the Stripe dashboard, since they
     // never pass through doPost and so never get a CVC- order id.
