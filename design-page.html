@@ -434,10 +434,7 @@
     // outside every window the standing tier applies.
     var BOGO_STANDING = { off:0.5, label:'Buy 1 Get 1 50%', short:'BOGO50' };
     var BOGO_SCHEDULE = [
-      // Black Friday through Cyber Monday — the same mechanic dialled up to free,
-      // so it reads as an upgrade of a promo customers already know.
-      { from:'2026-11-27T05:00:00Z', to:'2026-12-01T05:00:00Z',
-        off:0, label:'Buy 1 Get 1 FREE', short:'BOGOFREE' }
+      // Black Friday Buy 1 Get 1 FREE is code-gated via BF2026 (and CYBERRUSH on Cyber Monday).
     ];
     function bogoTier(){
       var now = Date.now();
@@ -448,7 +445,8 @@
       return BOGO_STANDING;
     }
 
-    // Promo codes (stack with Buy 1 Get 1 50% Off).
+    // Promo codes (stack with Buy 1 Get 1 50% Off unless bogoFree upgrades the BOGO tier).
+    //   bogoFree  upgrades Buy 1 Get 1 50% Off to Buy 1 Get 1 FREE (cheaper card per pair is $0)
     //   percent   share of the card subtotal after the BOGO discount
     //   amount    flat dollar value off
     //   freeRush  waives the Rush add-on instead of discounting cards
@@ -459,11 +457,10 @@
     // share of a small order than a large one, so they stay safe unattended.
     var PROMO_CODES = {
       WELCOME10: { percent:10, freeShip:false, label:'WELCOME10', expires:'2028-01-01T05:00:00Z' }, // email signup offer
-      // No Black Friday code: that weekend upgrades the standing Buy 1 Get 1 to
-      // FREE automatically (see BOGO_SCHEDULE), which is a deeper offer than any
-      // percentage code and needs nothing typed.
-      // Cyber Monday. Gives away turnaround pressure rather than cash.
-      CYBERRUSH: { freeRush:true, label:'CYBERRUSH', starts:'2026-11-30T05:00:00Z', expires:'2026-12-01T05:00:00Z' },
+      // Black Friday week through Cyber Monday — unlocks Buy 1 Get 1 FREE (2+ cards).
+      BF2026:    { bogoFree:true, minCards:2, label:'BF2026', expires:'2026-12-01T05:00:00Z' },
+      // Cyber Monday — Buy 1 Get 1 FREE (on 2+ cards) + free Rush upgrade.
+      CYBERRUSH: { bogoFree:true, freeRush:true, label:'CYBERRUSH', starts:'2026-11-30T05:00:00Z', expires:'2026-12-01T05:00:00Z' },
       // Boxing Week. Self-purchase window with no delivery deadline, so price is the lever.
       BOXING15:  { percent:15, label:'BOXING15', starts:'2026-12-26T05:00:00Z', expires:'2027-01-04T05:00:00Z' },
       SUMMONING2026: { amount:15, freeShip:true, label:'SUMMONING2026', expires:'2026-09-01T04:00:00Z' }, // valid through Aug 31 (Eastern)
@@ -483,9 +480,23 @@
       for(i=0;i<qty.slab;i++) list.push({ type:'slab', name:PRODUCTS.slab.name, price:PRODUCTS.slab.price });
       for(i=0;i<qty.raw;i++)  list.push({ type:'raw',  name:PRODUCTS.raw.name,  price:PRODUCTS.raw.price  });
 
+      var promo = appliedCode ? PROMO_CODES[appliedCode] : null;
+      var codeOff = 0, rushOff = 0, codeNote = '', bogoUpgraded = false;
+
+      // Conditions a code can fail even after passing the date check at entry,
+      // because the basket can change afterwards.
+      if(promo && promo.minCards && list.length < promo.minCards){
+        codeNote = appliedCode + ' needs at least ' + promo.minCards + ' cards — add one more to use it.';
+        promo = null;
+      }
+
       // Buy 1 Get 1 — the cheaper card of every pair is discounted, at whatever
-      // depth today's tier calls for.
+      // depth today's tier (or an active bogoFree code) calls for.
       var tier = bogoTier();
+      if(promo && promo.bogoFree && list.length >= PROMO_EVERY && tier.off > 0){
+        tier = { off:0, label:'Buy 1 Get 1 FREE', short:'BOGOFREE' };
+        bogoUpgraded = true;
+      }
       var byCheapest = list.map(function(_,idx){ return idx; })
         .sort(function(a,b){ return list[a].price - list[b].price; });
       var freeCount = Math.floor(list.length / PROMO_EVERY);
@@ -495,29 +506,13 @@
       var itemsSubtotal = r2(list.reduce(function(s,c){ return s + c.price; }, 0));
       var discount      = r2(list.reduce(function(s,c){ return s + (c.price - c.charged); }, 0));
 
-      // Promo code: reduce the price of the cards themselves, because Stripe line
-      // items can't be negative. Percent codes take a share of the card subtotal
-      // after the BOGO discount; flat codes take a fixed dollar amount. Either way the
-      // reduction spreads across the charged cards, starting with the priciest, so
-      // a large order still gets the full discount instead of being capped at one
-      // card's price.
-      var promo = appliedCode ? PROMO_CODES[appliedCode] : null;
-      var codeOff = 0, rushOff = 0, codeNote = '';
-
       // Nothing stacks on top of a free card except the Rush waiver. Two cards for
       // the price of one is already the deepest offer we run, and letting a
       // flat-dollar code pile on after it can take an order below cost once
       // postage is counted. The Rush waiver is exempt: it touches the add-on, not
       // the cards, so it can't erode the card margin.
-      if(promo && list.length && tier.off === 0 && !promo.freeRush){
+      if(promo && list.length && tier.off === 0 && !promo.freeRush && !promo.bogoFree){
         codeNote = tier.label + ' is already applied — it beats ' + appliedCode + ', so we kept the better deal.';
-        promo = null;
-      }
-
-      // Conditions a code can fail even after passing the date check at entry,
-      // because the basket can change afterwards.
-      if(promo && promo.minCards && list.length < promo.minCards){
-        codeNote = appliedCode + ' needs at least ' + promo.minCards + ' cards — add one more to use it.';
         promo = null;
       }
 
@@ -526,10 +521,10 @@
         var rush = null;
         addons.forEach(function(a){ if(/rush/i.test(a.name)) rush = a; });
         if(rush){ rushOff = rush.price; }
-        else { codeNote = 'Tick "Rush turnaround" in step 1 to use ' + appliedCode + '.'; }
+        else if(!bogoUpgraded){ codeNote = 'Tick "Rush turnaround" in step 1 to use ' + appliedCode + '.'; }
       }
 
-      if(promo && !promo.freeRush && list.length){
+      if(promo && (promo.percent || promo.amount) && list.length){
         var target = promo.percent
           ? r2((itemsSubtotal - discount) * promo.percent / 100)
           : promo.amount;
@@ -568,8 +563,9 @@
                standCount:standCount, standTotal:standTotal,
                merch:merch, shipping:shipping, rushOff:rushOff, codeNote:codeNote,
                bogoLabel:tier.label, bogoShort:tier.short, bogoFree:(tier.off === 0),
+               bogoUpgraded:bogoUpgraded,
                total:total, freeCount:freeCount,
-               promoCode:((codeOff > 0 || rushOff > 0) ? appliedCode : ''),
+               promoCode:((codeOff > 0 || rushOff > 0 || bogoUpgraded) ? appliedCode : ''),
                codeOff:codeOff, codeFreeShip:codeFreeShip };
     }
 
@@ -594,6 +590,9 @@
       if(appliedCode && o.codeNote){
         pmsg.className = 'promo-msg bad';
         pmsg.textContent = o.codeNote;
+      } else if(appliedCode && pmsg.className.indexOf('bad') > -1){
+        pmsg.className = 'promo-msg ok';
+        pmsg.textContent = '✓ ' + appliedCode + ' applied.';
       }
 
       document.querySelectorAll('.choice').forEach(function(c){
@@ -866,7 +865,7 @@
       });
       if(o.standCount>0) html += '<div class="line"><span>+ Display stand ('+o.standCount+' slab'+(o.standCount===1?'':'s')+')</span><span>'+money(o.standTotal)+'</span></div>';
       if(o.wrapCount>0) html += '<div class="line"><span>+ Gift wrapping ('+o.wrapCount+' card'+(o.wrapCount===1?'':'s')+')</span><span>'+money(o.wrapTotal)+'</span></div>';
-      if(o.discount>0) html += '<div class="line disc"><span>'+o.bogoLabel+(o.bogoFree?' — FREE':' OFF')+'</span><span>−'+money(o.discount)+'</span></div>';
+      if(o.discount>0) html += '<div class="line disc"><span>'+o.bogoLabel+(o.bogoUpgraded?' ('+o.promoCode+')':(o.bogoFree?' — FREE':' OFF'))+'</span><span>−'+money(o.discount)+'</span></div>';
       if(o.codeOff>0) html += '<div class="line disc"><span>Promo — '+o.promoCode+'</span><span>−'+money(o.codeOff)+'</span></div>';
       html += '<div class="line"><span>Shipping'+(o.shipping>0?'':(o.codeFreeShip?' ('+o.promoCode+')':' (over $75)'))+'</span><span>'+(o.shipping>0?money(o.shipping):'FREE')+'</span></div>';
       cards.forEach(function(c, i){
@@ -906,10 +905,12 @@
         } else {
           appliedCode = raw;
           msg.className = 'promo-msg ok';
-          var what = p.freeRush ? 'free Rush upgrade'
-                   : p.percent  ? (p.percent + '% off')
-                                : ('$' + p.amount + ' off');
-          msg.textContent = '✓ ' + raw + ' applied — ' + what + (p.freeShip ? ' + free shipping' : '') + '.';
+          var parts = [];
+          if(p.bogoFree) parts.push('Buy 1 Get 1 FREE');
+          if(p.freeRush) parts.push('free Rush upgrade');
+          if(p.percent)  parts.push(p.percent + '% off');
+          if(p.amount)   parts.push('$' + p.amount + ' off');
+          msg.textContent = '✓ ' + raw + ' applied — ' + parts.join(' + ') + (p.freeShip ? ' + free shipping' : '') + '.';
         }
       }
       recalc(); buildSummary();
